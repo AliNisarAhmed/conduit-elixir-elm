@@ -14,6 +14,14 @@ defmodule ConduitElixirWeb.ArticleView do
   end
 
   def render("article.json", %{article: article}) do
-    %{id: article.id, title: article.title}
+    %{
+      id: article.id,
+      title: article.title,
+      body: article.body,
+      description: article.description,
+      updatedAt: article.updated_at |> NaiveDateTime.to_iso8601(),
+      createdAt: article.inserted_at |> NaiveDateTime.to_iso8601(),
+      author: article.user_id
+    }
   end
 end

@@ -11,9 +11,9 @@ defmodule ConduitElixirWeb.ArticleController do
     render(conn, "index.json", articles: articles)
   end
 
-  def create(conn, article_params) do
-    IO.inspect(article_params)
-    with {:ok, %Article{} = article} <- Articles.create_article(article_params) do
+  def create(conn, %{"article" => article_params}) do
+    user_id = 1
+    with {:ok, %Article{} = article} <- Articles.create_article(article_params, user_id) do
       conn
       |> put_status(:created)
       # |> put_resp_header("location", Routes.article_path(conn, :show, article))

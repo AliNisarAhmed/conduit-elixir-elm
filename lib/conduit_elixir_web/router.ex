@@ -8,9 +8,16 @@ defmodule ConduitElixirWeb.Router do
   scope "/api", ConduitElixirWeb do
     pipe_through :api
 
-    get "/articles", ArticleController, :index
-    post "/articles", ArticleController, :create
-    get "/article/:id", ArticleController, :show
+    scope "/articles" do 
+      get "/", ArticleController, :index
+      post "/", ArticleController, :create
+      get "/:id", ArticleController, :show
+    end
+
+    scope "/users" do 
+      post "/", UserController, :create
+    end
+
   end
 
   # Enables LiveDashboard only for development

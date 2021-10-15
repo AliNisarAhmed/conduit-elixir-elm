@@ -49,8 +49,9 @@ defmodule ConduitElixir.Articles do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_article(attrs \\ %{}) do
+  def create_article(attrs \\ %{}, user_id) do
     %Article{}
+    |> Map.put(:user_id, user_id)
     |> Article.changeset(attrs)
     |> Repo.insert()
   end

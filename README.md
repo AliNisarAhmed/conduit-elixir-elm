@@ -17,3 +17,13 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
   * Docs: https://hexdocs.pm/phoenix
   * Forum: https://elixirforum.com/c/phoenix-forum
   * Source: https://github.com/phoenixframework/phoenix
+
+## Commands 
+
+`mix ecto.rollback`
+
+`mix ecto.gen.migrations create_users`
+
+`mix ecto.migrate`
+
+`mix deps.get`
