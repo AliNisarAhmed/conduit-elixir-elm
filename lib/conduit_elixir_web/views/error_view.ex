@@ -3,7 +3,12 @@ defmodule ConduitElixirWeb.ErrorView do
 
   # If you want to customize a particular status code
   # for a certain format, you may uncomment below.
-  # def render("500.json", _assigns) do
+
+  def render("400.json", _assigns) do
+    %{errors: %{detail: "Internal Server Error"}}
+  end
+
+  # def render("500.json", _assigns) do 
   #   %{errors: %{detail: "Internal Server Error"}}
   # end
 

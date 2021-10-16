@@ -1,6 +1,8 @@
 defmodule ConduitElixirWeb.ArticleView do
   use ConduitElixirWeb, :view
+
   alias ConduitElixirWeb.ArticleView
+  alias ConduitElixirWeb.TagView
 
   def render("index.json", %{articles: articles}) do
     %{
@@ -21,7 +23,8 @@ defmodule ConduitElixirWeb.ArticleView do
       description: article.description,
       updatedAt: article.updated_at |> NaiveDateTime.to_iso8601(),
       createdAt: article.inserted_at |> NaiveDateTime.to_iso8601(),
-      author: article.user_id
+      author: article.user_id,
+      tagList: TagView.render("index.json", tags: article.tags)
     }
   end
 end

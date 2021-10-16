@@ -15,4 +15,8 @@ defmodule ConduitElixir.Accounts do
     |> Repo.insert()
   end
 
+  def get_user_by_id(user_id) do 
+    Repo.get(User, user_id)
+  end
+
 end

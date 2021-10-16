@@ -11,7 +11,7 @@ defmodule ConduitElixirWeb.ArticleController do
     render(conn, "index.json", articles: articles)
   end
 
-  def create(conn, %{"article" => article_params}) do
+  def create(conn, %{"article" => %{ "tagList" => _tagList } = article_params}) do
     user_id = 1
     with {:ok, %Article{} = article} <- Articles.create_article(article_params, user_id) do
       conn
