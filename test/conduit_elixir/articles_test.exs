@@ -6,18 +6,9 @@ defmodule ConduitElixir.ArticlesTest do
   describe "articles" do
     alias ConduitElixir.Articles.Article
 
-    @valid_attrs %{title: "some title"}
-    @update_attrs %{title: "some updated title"}
-    @invalid_attrs %{title: nil}
+    import ConduitElixir.ArticlesFixtures
 
-    def article_fixture(attrs \\ %{}) do
-      {:ok, article} =
-        attrs
-        |> Enum.into(@valid_attrs)
-        |> Articles.create_article()
-
-      article
-    end
+    @invalid_attrs %{body: nil, description: nil, title: nil}
 
     test "list_articles/0 returns all articles" do
       article = article_fixture()
@@ -30,7 +21,11 @@ defmodule ConduitElixir.ArticlesTest do
     end
 
     test "create_article/1 with valid data creates a article" do
-      assert {:ok, %Article{} = article} = Articles.create_article(@valid_attrs)
+      valid_attrs = %{body: "some body", description: "some description", title: "some title"}
+
+      assert {:ok, %Article{} = article} = Articles.create_article(valid_attrs)
+      assert article.body == "some body"
+      assert article.description == "some description"
       assert article.title == "some title"
     end
 
@@ -40,7 +35,11 @@ defmodule ConduitElixir.ArticlesTest do
 
     test "update_article/2 with valid data updates the article" do
       article = article_fixture()
-      assert {:ok, %Article{} = article} = Articles.update_article(article, @update_attrs)
+      update_attrs = %{body: "some updated body", description: "some updated description", title: "some updated title"}
+
+      assert {:ok, %Article{} = article} = Articles.update_article(article, update_attrs)
+      assert article.body == "some updated body"
+      assert article.description == "some updated description"
       assert article.title == "some updated title"
     end
 

@@ -2,16 +2,13 @@ defmodule ConduitElixir.Articles.Article do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias ConduitElixir.Accounts.User
   alias ConduitElixir.Tags.Tag
   alias ConduitElixir.Tags.ArticleTag
 
   schema "articles" do
-    field :title, :string
-    field :body, :string 
+    field :body, :string
     field :description, :string
-
-    belongs_to :user, User
+    field :title, :string
 
     many_to_many :tags, Tag, join_through: ArticleTag 
 
