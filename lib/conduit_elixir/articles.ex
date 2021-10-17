@@ -8,7 +8,6 @@ defmodule ConduitElixir.Articles do
 
   alias ConduitElixir.Articles.Article
   alias ConduitElixir.Tags.Tag
-  alias ConduitElixir.Accounts
 
   @doc """
   Returns the list of articles.
@@ -20,9 +19,11 @@ defmodule ConduitElixir.Articles do
 
   """
   def list_articles do
-    Repo.all from a in Article,
-      join: t in assoc(a, :tags),
-      preload: [tags: t]
+    Repo.all(
+      from a in Article,
+        join: t in assoc(a, :tags),
+        preload: [tags: t]
+    )
   end
 
   @doc """
@@ -53,16 +54,13 @@ defmodule ConduitElixir.Articles do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_article(%{"tagList" => tagList} = attrs \\ %{}, user_id) do
-    user = Accounts.get_user_by_id(user_id)
-
+  def create_article(%{"tagList" => tagList} = attrs \\ %{}) do
     tags =
       tagList
       |> Enum.map(fn t -> Tag.changeset(%Tag{}, %{title: t}) end)
       |> Enum.to_list()
 
-    user
-    |> Ecto.build_assoc(:articles)
+    %Article{}
     |> Repo.preload([:tags])
     |> Article.changeset(attrs)
     |> Ecto.Changeset.put_assoc(:tags, tags)

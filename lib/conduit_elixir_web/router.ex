@@ -9,13 +9,13 @@ defmodule ConduitElixirWeb.Router do
     pipe_through :api
 
     scope "/articles" do 
-      get "/", ArticleController, :index
-      post "/", ArticleController, :create
+      get "/", ArticleController, :index 
+      post "/", ArticleController, :create 
       get "/:id", ArticleController, :show
     end
 
     scope "/users" do 
-      post "/", UserController, :create
+      post "/", AuthController, :register
     end
 
   end
@@ -33,6 +33,18 @@ defmodule ConduitElixirWeb.Router do
     scope "/" do
       pipe_through [:fetch_session, :protect_from_forgery]
       live_dashboard "/dashboard", metrics: ConduitElixirWeb.Telemetry
+    end
+  end
+
+  # Enables the Swoosh mailbox preview in development.
+  #
+  # Note that preview only shows emails that were sent by the same
+  # node running the Phoenix server.
+  if Mix.env() == :dev do
+    scope "/dev" do
+      pipe_through [:fetch_session, :protect_from_forgery]
+
+      forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
   end
 end

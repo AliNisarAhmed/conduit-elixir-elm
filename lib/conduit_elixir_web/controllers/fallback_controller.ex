@@ -21,11 +21,4 @@ defmodule ConduitElixirWeb.FallbackController do
     |> put_view(ConduitElixirWeb.ErrorView)
     |> render(:"404")
   end
-
-  def call(conn, {:error, :bad_request}) do 
-    conn 
-    |> put_status(:bad_request)
-    |> put_view(ConduitElixirWeb.ChangesetView) 
-    |> render(:"400")
-  end
 end

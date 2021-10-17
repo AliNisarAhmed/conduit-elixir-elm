@@ -1,21 +1,21 @@
 defmodule ConduitElixirWeb.ArticleControllerTest do
   use ConduitElixirWeb.ConnCase
 
-  alias ConduitElixir.Articles
+  import ConduitElixir.ArticlesFixtures
+
   alias ConduitElixir.Articles.Article
 
   @create_attrs %{
+    body: "some body",
+    description: "some description",
     title: "some title"
   }
   @update_attrs %{
+    body: "some updated body",
+    description: "some updated description",
     title: "some updated title"
   }
-  @invalid_attrs %{title: nil}
-
-  def fixture(:article) do
-    {:ok, article} = Articles.create_article(@create_attrs)
-    article
-  end
+  @invalid_attrs %{body: nil, description: nil, title: nil}
 
   setup %{conn: conn} do
     {:ok, conn: put_req_header(conn, "accept", "application/json")}
@@ -36,7 +36,9 @@ defmodule ConduitElixirWeb.ArticleControllerTest do
       conn = get(conn, Routes.article_path(conn, :show, id))
 
       assert %{
-               "id" => id,
+               "id" => ^id,
+               "body" => "some body",
+               "description" => "some description",
                "title" => "some title"
              } = json_response(conn, 200)["data"]
     end
@@ -57,7 +59,9 @@ defmodule ConduitElixirWeb.ArticleControllerTest do
       conn = get(conn, Routes.article_path(conn, :show, id))
 
       assert %{
-               "id" => id,
+               "id" => ^id,
+               "body" => "some updated body",
+               "description" => "some updated description",
                "title" => "some updated title"
              } = json_response(conn, 200)["data"]
     end
@@ -82,7 +86,7 @@ defmodule ConduitElixirWeb.ArticleControllerTest do
   end
 
   defp create_article(_) do
-    article = fixture(:article)
+    article = article_fixture()
     %{article: article}
   end
 end
