@@ -3,6 +3,10 @@ defmodule ConduitElixirWeb.AuthController do
 
   alias ConduitElixir.Auth
 
+  import ConduitElixirWeb.Plugs.Auth
+
+  plug :require_guest_user when action in [:register, :login]
+
   def register(conn, %{"user" => user_params}) do
     with {:ok, user} <- Auth.register_user(user_params, hash_password: true) do
       conn

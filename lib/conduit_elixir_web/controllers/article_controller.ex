@@ -4,7 +4,11 @@ defmodule ConduitElixirWeb.ArticleController do
   alias ConduitElixir.Articles
   alias ConduitElixir.Articles.Article
 
+  import ConduitElixirWeb.Plugs.Auth
+
   action_fallback ConduitElixirWeb.FallbackController
+
+  plug :require_authenticated_user when action in [:create]
 
   def index(conn, _params) do
     articles = Articles.list_articles()
