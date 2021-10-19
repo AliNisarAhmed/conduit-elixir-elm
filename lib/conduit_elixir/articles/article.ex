@@ -4,6 +4,7 @@ defmodule ConduitElixir.Articles.Article do
 
   alias ConduitElixir.Tags.Tag
   alias ConduitElixir.Tags.ArticleTag
+  alias ConduitElixir.Auth.User
 
   schema "articles" do
     field :body, :string
@@ -11,6 +12,7 @@ defmodule ConduitElixir.Articles.Article do
     field :title, :string
 
     many_to_many :tags, Tag, join_through: ArticleTag 
+    belongs_to :user, User
 
     timestamps()
   end

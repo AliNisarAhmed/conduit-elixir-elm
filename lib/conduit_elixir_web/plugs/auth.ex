@@ -39,7 +39,7 @@ defmodule ConduitElixirWeb.Plugs.Auth do
 
   defp fetch_token([token | _tail]) do
     token
-    |> String.replace("Bearer", "")
+    |> String.replace("Token", "")
     |> String.trim()
   end
 end

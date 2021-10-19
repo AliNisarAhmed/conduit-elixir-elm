@@ -12,11 +12,12 @@ defmodule ConduitElixirWeb.ArticleController do
 
   def index(conn, _params) do
     articles = Articles.list_articles()
+    IO.inspect(articles)
     render(conn, "index.json", articles: articles)
   end
 
-  def create(conn, %{"article" => article_params}) do
-    with {:ok, %Article{} = article} <- Articles.create_article(article_params) do
+  def create(%Plug.Conn{assigns: assigns} = conn, %{"article" => article_params}) do
+    with {:ok, %Article{} = article} <- Articles.create_article(article_params, assigns.current_user) do
       conn
       |> put_status(:created)
       |> put_resp_header("location", Routes.article_path(conn, :show, article))

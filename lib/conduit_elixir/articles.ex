@@ -8,6 +8,7 @@ defmodule ConduitElixir.Articles do
 
   alias ConduitElixir.Articles.Article
   alias ConduitElixir.Tags.Tag
+  alias ConduitElixir.Auth.User
 
   @doc """
   Returns the list of articles.
@@ -21,8 +22,7 @@ defmodule ConduitElixir.Articles do
   def list_articles do
     Repo.all(
       from a in Article,
-        join: t in assoc(a, :tags),
-        preload: [tags: t]
+        preload: [:tags]
     )
   end
 
@@ -54,15 +54,33 @@ defmodule ConduitElixir.Articles do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_article(%{"tagList" => tagList} = attrs \\ %{}) do
+  def create_article(%{"tagList" => tagList} = attrs \\ %{}, current_user) do
     tags =
       tagList
       |> Enum.map(fn t -> Tag.changeset(%Tag{}, %{title: t}) end)
       |> Enum.to_list()
 
-    %Article{}
-    |> Repo.preload([:tags])
+    # %Article{}
+    # |> Repo.preload([:tags, :users])
+    # |> Article.changeset(attrs)
+    # |> Ecto.Changeset.put_assoc(:tags, tags)
+    # |> Ecto.Changeset.put_assoc(:users, %{id: user_id})
+    # |> Repo.insert()
+
+    #     %{}
+    #     |> Ecto.Changeset.put_assoc(:articles, Article.changeset(%Article{}, attrs))
+    #     |> Repo.preload([:tags])
+    #     |> Ecto.Changeset.put_assoc(:tags, tags)
+    #     |> Repo.insert()
+    # User.assoc_changeset(%User{}, %{id: user_id})
+    # |> IO.inspect()
+  
+    Ecto.build_assoc(current_user, :articles)
+    |> IO.inspect()
     |> Article.changeset(attrs)
+    |> IO.inspect()
+    # |> Repo.preload([:tags])
+    |> IO.inspect()
     |> Ecto.Changeset.put_assoc(:tags, tags)
     |> Repo.insert()
   end
