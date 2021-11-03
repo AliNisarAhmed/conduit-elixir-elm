@@ -4,6 +4,8 @@ defmodule ConduitElixir.Auth.User do
 
   alias ConduitElixir.Articles.Article
 
+  @timestamps_opts [type: :utc_datetime_usec]
+
   schema "users" do
     field :email, :string
     field :password, :string, virtual: true

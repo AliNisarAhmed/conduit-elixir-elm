@@ -21,8 +21,8 @@ defmodule ConduitElixirWeb.ArticleView do
       title: article.title,
       body: article.body,
       description: article.description,
-      updatedAt: article.updated_at |> NaiveDateTime.to_iso8601(),
-      createdAt: article.inserted_at |> NaiveDateTime.to_iso8601(),
+      updatedAt: article.updated_at |> DateTime.to_iso8601(:extended, 0),
+      createdAt: article.inserted_at |> DateTime.to_iso8601(:extended, 0),
       tagList: TagView.render("index.json", tags: article.tags),
       author: article.user_id
     }

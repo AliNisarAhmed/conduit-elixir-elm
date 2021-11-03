@@ -8,6 +8,8 @@ defmodule ConduitElixir.Articles.Article do
   alias ConduitElixir.Tags.ArticleTag
   alias ConduitElixir.Auth.User
 
+  @timestamps_opts [type: :utc_datetime_usec]
+
   schema "articles" do
     field :body, :string
     field :description, :string
@@ -41,8 +43,8 @@ defmodule ConduitElixir.Articles.Article do
 
   defp insert_and_get_all(titles) do
     timestamp =
-      NaiveDateTime.utc_now()
-      |> NaiveDateTime.truncate(:second)
+      DateTime.utc_now()
+      |> DateTime.truncate(:second)
 
     placeholders = %{timestamp: timestamp}
 

@@ -5,6 +5,8 @@ defmodule ConduitElixir.Tags.Tag do
   alias ConduitElixir.Tags.ArticleTag
   alias ConduitElixir.Articles.Article
 
+  @timestamps_opts [type: :utc_datetime_usec]
+
   schema "tags" do
     field :title, :string
 
