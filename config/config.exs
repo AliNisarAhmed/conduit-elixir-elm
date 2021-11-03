@@ -15,7 +15,8 @@ config :conduit_elixir, ConduitElixirWeb.Endpoint,
   url: [host: "localhost"],
   render_errors: [view: ConduitElixirWeb.ErrorView, accepts: ~w(json), layout: false],
   pubsub_server: ConduitElixir.PubSub,
-  live_view: [signing_salt: "i974ouTa"]
+  live_view: [signing_salt: "i974ouTa"],
+  secret_key_base: "kjoy3o1zeidquwy1398juxzldjlksahdk3"
 
 # Configures the mailer
 #

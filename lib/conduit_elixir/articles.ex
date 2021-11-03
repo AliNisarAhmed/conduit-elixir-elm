@@ -8,6 +8,7 @@ defmodule ConduitElixir.Articles do
 
   alias ConduitElixir.Articles.Article
   alias ConduitElixir.Tags.Tag
+  alias ConduitElixir.Auth.User
 
   @doc """
   Returns the list of articles.
@@ -21,8 +22,7 @@ defmodule ConduitElixir.Articles do
   def list_articles do
     Repo.all(
       from a in Article,
-        join: t in assoc(a, :tags),
-        preload: [tags: t]
+        preload: [:tags]
     )
   end
 
@@ -54,16 +54,9 @@ defmodule ConduitElixir.Articles do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_article(%{"tagList" => tagList} = attrs \\ %{}) do
-    tags =
-      tagList
-      |> Enum.map(fn t -> Tag.changeset(%Tag{}, %{title: t}) end)
-      |> Enum.to_list()
-
+  def create_article(attrs \\ %{}, current_user) do
     %Article{}
-    |> Repo.preload([:tags])
-    |> Article.changeset(attrs)
-    |> Ecto.Changeset.put_assoc(:tags, tags)
+    |> Article.create_changeset(attrs, current_user)
     |> Repo.insert()
   end
 
@@ -79,10 +72,10 @@ defmodule ConduitElixir.Articles do
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_article(%Article{} = article, attrs) do
+  def update_article(%Article{} = article, _attrs) do
     article
-    |> Article.changeset(attrs)
-    |> Repo.update()
+    # |> Article.changeset(attrs)
+    # |> Repo.update()
   end
 
   @doc """
@@ -101,16 +94,16 @@ defmodule ConduitElixir.Articles do
     Repo.delete(article)
   end
 
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking article changes.
+  # @doc """
+  # Returns an `%Ecto.Changeset{}` for tracking article changes.
 
-  ## Examples
+  # ## Examples
 
-      iex> change_article(article)
-      %Ecto.Changeset{data: %Article{}}
+  #     iex> change_article(article)
+  #     %Ecto.Changeset{data: %Article{}}
 
-  """
-  def change_article(%Article{} = article, attrs \\ %{}) do
-    Article.changeset(article, attrs)
-  end
+  # """
+  # def change_article(%Article{} = article, attrs \\ %{}) do
+  #   Article.changeset(article, attrs)
+  # end
 end

@@ -2,12 +2,16 @@ defmodule ConduitElixir.Auth.User do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias ConduitElixir.Articles.Article
+
   schema "users" do
     field :email, :string
     field :password, :string, virtual: true
     field :hashed_password, :string
     field :username, :string
     field :bio, :string
+
+    has_many :articles, Article
 
     timestamps()
   end
@@ -18,6 +22,16 @@ defmodule ConduitElixir.Auth.User do
     |> validate_email()
     |> validate_username()
     |> validate_password(opts)
+  end
+
+  def assoc_changeset(user, attrs) do 
+    user 
+    |> cast(attrs, [])
+  end
+
+  def valid_password?(%ConduitElixir.Auth.User{hashed_password: hashed_password}, password) 
+    when is_binary(hashed_password) and byte_size(password) > 0 do 
+    Bcrypt.verify_pass(password, hashed_password)
   end
 
   # --------------------------------------------------------------------------------

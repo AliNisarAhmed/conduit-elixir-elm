@@ -1,8 +1,11 @@
 defmodule ConduitElixirWeb.Router do
   use ConduitElixirWeb, :router
 
+  import ConduitElixirWeb.Plugs.Auth
+
   pipeline :api do
     plug :accepts, ["json"]
+    plug :fetch_current_user
   end
 
   scope "/api", ConduitElixirWeb do
@@ -16,6 +19,7 @@ defmodule ConduitElixirWeb.Router do
 
     scope "/users" do 
       post "/", AuthController, :register
+      post "/login", AuthController, :login
     end
 
   end
