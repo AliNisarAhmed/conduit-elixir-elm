@@ -18,5 +18,6 @@ defmodule ConduitElixir.Tags.Tag do
     tag
     |> cast(attrs, [:title])
     |> validate_required([:title])
+    |> unique_constraint(:title)
   end
 end

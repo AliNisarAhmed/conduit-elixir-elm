@@ -54,34 +54,9 @@ defmodule ConduitElixir.Articles do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_article(%{"tagList" => tagList} = attrs \\ %{}, current_user) do
-    tags =
-      tagList
-      |> Enum.map(fn t -> Tag.changeset(%Tag{}, %{title: t}) end)
-      |> Enum.to_list()
-
-    # %Article{}
-    # |> Repo.preload([:tags, :users])
-    # |> Article.changeset(attrs)
-    # |> Ecto.Changeset.put_assoc(:tags, tags)
-    # |> Ecto.Changeset.put_assoc(:users, %{id: user_id})
-    # |> Repo.insert()
-
-    #     %{}
-    #     |> Ecto.Changeset.put_assoc(:articles, Article.changeset(%Article{}, attrs))
-    #     |> Repo.preload([:tags])
-    #     |> Ecto.Changeset.put_assoc(:tags, tags)
-    #     |> Repo.insert()
-    # User.assoc_changeset(%User{}, %{id: user_id})
-    # |> IO.inspect()
-  
-    Ecto.build_assoc(current_user, :articles)
-    |> IO.inspect()
-    |> Article.changeset(attrs)
-    |> IO.inspect()
-    # |> Repo.preload([:tags])
-    |> IO.inspect()
-    |> Ecto.Changeset.put_assoc(:tags, tags)
+  def create_article(attrs \\ %{}, current_user) do
+    %Article{}
+    |> Article.create_changeset(attrs, current_user)
     |> Repo.insert()
   end
 
@@ -97,10 +72,10 @@ defmodule ConduitElixir.Articles do
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_article(%Article{} = article, attrs) do
+  def update_article(%Article{} = article, _attrs) do
     article
-    |> Article.changeset(attrs)
-    |> Repo.update()
+    # |> Article.changeset(attrs)
+    # |> Repo.update()
   end
 
   @doc """
@@ -119,16 +94,16 @@ defmodule ConduitElixir.Articles do
     Repo.delete(article)
   end
 
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking article changes.
+  # @doc """
+  # Returns an `%Ecto.Changeset{}` for tracking article changes.
 
-  ## Examples
+  # ## Examples
 
-      iex> change_article(article)
-      %Ecto.Changeset{data: %Article{}}
+  #     iex> change_article(article)
+  #     %Ecto.Changeset{data: %Article{}}
 
-  """
-  def change_article(%Article{} = article, attrs \\ %{}) do
-    Article.changeset(article, attrs)
-  end
+  # """
+  # def change_article(%Article{} = article, attrs \\ %{}) do
+  #   Article.changeset(article, attrs)
+  # end
 end
