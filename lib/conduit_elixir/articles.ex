@@ -7,8 +7,6 @@ defmodule ConduitElixir.Articles do
   alias ConduitElixir.Repo
 
   alias ConduitElixir.Articles.Article
-  alias ConduitElixir.Tags.Tag
-  alias ConduitElixir.Auth.User
   alias ConduitElixir.Favorites.ArticleFavorite
 
   @doc """
@@ -41,7 +39,13 @@ defmodule ConduitElixir.Articles do
       ** (Ecto.NoResultsError)
 
   """
-  def get_article!(id), do: Repo.get!(Article, id)
+  def get_article!(id) do
+    query =
+      from a in Article,
+        preload: [:tags, :article_favorites]
+
+    Repo.get!(query, id)
+  end
 
   @doc """
   Creates a article.
@@ -99,17 +103,45 @@ defmodule ConduitElixir.Articles do
   Favorite an Article
   """
   def favorite_article(user_id, slug) do
-    query = 
-      from a in Article, 
-      preload: [:tags]
-
-    article = Repo.get_by!(query, slug: slug)
+    article_id = get_article_id_by_slug(slug)
 
     %ArticleFavorite{}
-    |> ArticleFavorite.changeset(%{article_id: article.id, user_id: user_id})
+    |> ArticleFavorite.changeset(%{article_id: article_id, user_id: user_id})
     |> Repo.insert!()
 
+    article = get_article_by_slug(slug)
+
     {:ok, article}
+  end
+
+  @doc """
+  Unfavorite an article
+  """
+  def unfavorite_article(user_id, slug) do
+    article_id = get_article_id_by_slug(slug)
+    fav = Repo.get_by!(ArticleFavorite, user_id: user_id, article_id: article_id)
+
+    Repo.delete!(fav)
+
+    {:ok, get_article_by_slug(slug)}
+  end
+
+  # ----------------------------------------------------------------------------------
+
+  defp get_article_id_by_slug(slug) do
+    query =
+      from a in Article,
+        select: a.id
+
+    Repo.get_by!(query, slug: slug)
+  end
+
+  defp get_article_by_slug(slug) do
+    query =
+      from a in Article,
+        preload: [:tags, :article_favorites]
+
+    Repo.get_by!(query, slug: slug)
   end
 
   # @doc """

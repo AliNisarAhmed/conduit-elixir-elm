@@ -19,6 +19,7 @@ defmodule ConduitElixirWeb.Router do
 
     scope "/articles/:slug" do 
       post "/favorite", ArticleController, :favorite
+      delete "/favorite", ArticleController, :unfavorite
     end
 
     scope "/users" do 

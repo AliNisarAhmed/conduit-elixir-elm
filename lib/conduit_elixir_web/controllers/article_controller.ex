@@ -55,4 +55,9 @@ defmodule ConduitElixirWeb.ArticleController do
     end
   end
 
+  def unfavorite(conn, %{"slug" => slug}) do
+    with {:ok, article} <- Articles.unfavorite_article(conn.assigns.current_user.id, slug) do
+      render(conn, "show.json", article: article)
+    end
+  end
 end

@@ -12,7 +12,7 @@ defmodule ConduitElixirWeb.ArticleView do
   end
 
   def render("show.json", %{article: article}) do
-    %{data: render_one(article, ArticleView, "article.json")}
+    %{article: render_one(article, ArticleView, "article.json")}
   end
 
   def render("article.json", %{article: article}) do
@@ -37,6 +37,6 @@ defmodule ConduitElixirWeb.ArticleView do
   defp favorited?([], _), do: false
   defp favorited?(list, user_id) do
     list
-    |> Enum.any?(fn af -> af.user_id == user_id end)
+    |> Enum.any?(fn item -> item.user_id == user_id end)
   end
 end
