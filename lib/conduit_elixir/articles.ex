@@ -9,6 +9,7 @@ defmodule ConduitElixir.Articles do
   alias ConduitElixir.Articles.Article
   alias ConduitElixir.Tags.Tag
   alias ConduitElixir.Auth.User
+  alias ConduitElixir.Favorites.ArticleFavorite
 
   @doc """
   Returns the list of articles.
@@ -92,6 +93,23 @@ defmodule ConduitElixir.Articles do
   """
   def delete_article(%Article{} = article) do
     Repo.delete(article)
+  end
+
+  @doc """
+  Favorite an Article
+  """
+  def favorite_article(user_id, slug) do
+    query = 
+      from a in Article, 
+      preload: [:tags]
+
+    article = Repo.get_by!(query, slug: slug)
+
+    %ArticleFavorite{}
+    |> ArticleFavorite.changeset(%{article_id: article.id, user_id: user_id})
+    |> Repo.insert!()
+
+    {:ok, article}
   end
 
   # @doc """

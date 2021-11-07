@@ -8,7 +8,7 @@ defmodule ConduitElixirWeb.ArticleController do
 
   action_fallback ConduitElixirWeb.FallbackController
 
-  plug :require_authenticated_user when action in [:create]
+  plug :require_authenticated_user when action in [:create, :favorite]
 
   def index(conn, _params) do
     articles = Articles.list_articles()
@@ -17,7 +17,8 @@ defmodule ConduitElixirWeb.ArticleController do
   end
 
   def create(%Plug.Conn{assigns: assigns} = conn, %{"article" => article_params}) do
-    with {:ok, %Article{} = article} <- Articles.create_article(article_params, assigns.current_user) do
+    with {:ok, %Article{} = article} <-
+           Articles.create_article(article_params, assigns.current_user) do
       conn
       |> put_status(:created)
       |> put_resp_header("location", Routes.article_path(conn, :show, article))
@@ -43,6 +44,14 @@ defmodule ConduitElixirWeb.ArticleController do
 
     with {:ok, %Article{}} <- Articles.delete_article(article) do
       send_resp(conn, :no_content, "")
+    end
+  end
+
+  # -------- Favorite -------------
+
+  def favorite(conn, %{"slug" => slug}) do
+    with {:ok, article} <- Articles.favorite_article(conn.assigns.current_user.id, slug) do
+      render(conn, "show.json", article: article)
     end
   end
 end

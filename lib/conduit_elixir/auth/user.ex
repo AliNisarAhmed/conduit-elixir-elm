@@ -3,6 +3,7 @@ defmodule ConduitElixir.Auth.User do
   import Ecto.Changeset
 
   alias ConduitElixir.Articles.Article
+  alias ConduitElixir.Favorites.ArticleFavorite
 
   @timestamps_opts [type: :utc_datetime_usec, usec: true]
 
@@ -14,6 +15,7 @@ defmodule ConduitElixir.Auth.User do
     field :bio, :string
 
     has_many :articles, Article
+    has_many :article_favorites, ArticleFavorite
 
     timestamps(@timestamps_opts)
   end

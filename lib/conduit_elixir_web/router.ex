@@ -17,6 +17,10 @@ defmodule ConduitElixirWeb.Router do
       get "/:id", ArticleController, :show
     end
 
+    scope "/articles/:slug" do 
+      post "/favorite", ArticleController, :favorite
+    end
+
     scope "/users" do 
       post "/", AuthController, :register
       post "/login", AuthController, :login

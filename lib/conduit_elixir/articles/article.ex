@@ -7,6 +7,7 @@ defmodule ConduitElixir.Articles.Article do
   alias ConduitElixir.Tags.Tag
   alias ConduitElixir.Tags.ArticleTag
   alias ConduitElixir.Auth.User
+  alias ConduitElixir.Favorites.ArticleFavorite
 
   @timestamps_opts [type: :utc_datetime_usec, usec: true]
 
@@ -18,6 +19,8 @@ defmodule ConduitElixir.Articles.Article do
 
     many_to_many :tags, Tag, join_through: ArticleTag, on_replace: :delete
     belongs_to :user, User
+
+    has_many :article_favorites, ArticleFavorite
 
     timestamps(@timestamps_opts)
   end
