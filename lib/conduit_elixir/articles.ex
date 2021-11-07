@@ -23,7 +23,7 @@ defmodule ConduitElixir.Articles do
   def list_articles do
     Repo.all(
       from a in Article,
-        preload: [:tags]
+        preload: [:tags, :article_favorites]
     )
   end
 

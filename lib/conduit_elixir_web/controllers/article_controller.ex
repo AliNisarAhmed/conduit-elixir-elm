@@ -54,4 +54,5 @@ defmodule ConduitElixirWeb.ArticleController do
       render(conn, "show.json", article: article)
     end
   end
+
 end

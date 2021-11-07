@@ -25,7 +25,14 @@ defmodule ConduitElixirWeb.ArticleView do
       createdAt: article.inserted_at |> DateTime.to_iso8601(:extended, 0),
       tagList: TagView.render("index.json", tags: article.tags),
       author: article.user_id,
-      slug: article.slug
+      slug: article.slug,
+      favorited: favorited?(article.article_favorites)
     }
   end
+
+  # -------------------------------
+
+  defp favorited?(nil), do: false
+  defp favorited?([]), do: false
+  defp favorited?(_), do: true
 end
