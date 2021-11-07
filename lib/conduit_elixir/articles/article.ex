@@ -8,17 +8,18 @@ defmodule ConduitElixir.Articles.Article do
   alias ConduitElixir.Tags.ArticleTag
   alias ConduitElixir.Auth.User
 
-  @timestamps_opts [type: :utc_datetime_usec]
+  @timestamps_opts [type: :utc_datetime_usec, usec: true]
 
   schema "articles" do
     field :body, :string
     field :description, :string
     field :title, :string
+    field :slug, :string
 
     many_to_many :tags, Tag, join_through: ArticleTag, on_replace: :delete
     belongs_to :user, User
 
-    timestamps()
+    timestamps(@timestamps_opts)
   end
 
   @doc false
@@ -28,6 +29,27 @@ defmodule ConduitElixir.Articles.Article do
     |> validate_required([:title, :body])
     |> put_change(:user_id, current_user.id)
     |> put_assoc(:tags, parse_tags(attrs["tagList"]))
+    |> put_slug()
+  end
+
+  defp put_slug(changeset) do
+    case fetch_change(changeset, :title) do
+      :error ->
+        changeset
+
+      {:ok, title} ->
+        changeset
+        |> put_change(:slug, slugify_title(title))
+    end
+  end
+
+  defp slugify_title(title) do
+    title
+    |> String.downcase()
+    |> String.split(~r/\s/)
+    |> Enum.take(10)
+    |> Enum.map(fn s -> String.replace(s, ~r/[^\w-]+/, "") end)
+    |> Enum.join("-")
   end
 
   defp parse_tags(tagList) do
@@ -44,7 +66,7 @@ defmodule ConduitElixir.Articles.Article do
   defp insert_and_get_all(titles) do
     timestamp =
       DateTime.utc_now()
-      |> DateTime.truncate(:second)
+      |> DateTime.truncate(:microsecond)
 
     placeholders = %{timestamp: timestamp}
 

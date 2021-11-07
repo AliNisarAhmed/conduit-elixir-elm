@@ -5,14 +5,14 @@ defmodule ConduitElixir.Tags.Tag do
   alias ConduitElixir.Tags.ArticleTag
   alias ConduitElixir.Articles.Article
 
-  @timestamps_opts [type: :utc_datetime_usec]
+  @timestamps_opts [type: :utc_datetime_usec, usec: true]
 
   schema "tags" do
     field :title, :string
 
     many_to_many :articles, Article, join_through: ArticleTag
 
-    timestamps()
+    timestamps(@timestamps_opts)
   end
 
   @doc false

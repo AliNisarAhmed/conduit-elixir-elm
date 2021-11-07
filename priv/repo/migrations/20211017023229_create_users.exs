@@ -1,5 +1,6 @@
 defmodule ConduitElixir.Repo.Migrations.CreateUsers do
   use Ecto.Migration
+  @timestamps_opts [type: :utc_datetime_usec, usec: true]
 
   def change do
     create table(:users) do 
@@ -9,7 +10,7 @@ defmodule ConduitElixir.Repo.Migrations.CreateUsers do
       add :bio, :string
 
 
-      timestamps()
+      timestamps(@timestamps_opts)
     end
 
     create unique_index("users", [:email])

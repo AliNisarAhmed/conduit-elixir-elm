@@ -4,7 +4,7 @@ defmodule ConduitElixir.Auth.User do
 
   alias ConduitElixir.Articles.Article
 
-  @timestamps_opts [type: :utc_datetime_usec]
+  @timestamps_opts [type: :utc_datetime_usec, usec: true]
 
   schema "users" do
     field :email, :string
@@ -15,7 +15,7 @@ defmodule ConduitElixir.Auth.User do
 
     has_many :articles, Article
 
-    timestamps()
+    timestamps(@timestamps_opts)
   end
 
   def registation_changeset(user, attrs, opts \\ []) do

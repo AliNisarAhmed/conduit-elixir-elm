@@ -1,4 +1,6 @@
 defmodule ConduitElixir.ArticlesFixtures do
+  alias ConduitElixir.Auth.User
+
   @moduledoc """
   This module defines test helpers for creating
   entities via the `ConduitElixir.Articles` context.
@@ -7,15 +9,15 @@ defmodule ConduitElixir.ArticlesFixtures do
   @doc """
   Generate a article.
   """
-  def article_fixture(attrs \\ %{}) do
+  def article_fixture() do
     {:ok, article} =
-      attrs
-      |> Enum.into(%{
-        body: "some body",
-        description: "some description",
-        title: "some title"
-      })
-      |> ConduitElixir.Articles.create_article()
+      %{
+        "body" => "some body",
+        "description" => "some description",
+        "title" => "some title",
+        "tagList" => []
+      }
+      |> ConduitElixir.Articles.create_article(%User{id: 1})
 
     article
   end
