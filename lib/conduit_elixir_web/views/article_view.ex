@@ -26,13 +26,17 @@ defmodule ConduitElixirWeb.ArticleView do
       tagList: TagView.render("index.json", tags: article.tags),
       author: article.user_id,
       slug: article.slug,
-      favorited: favorited?(article.article_favorites)
+      favorited: favorited?(article.article_favorites, article.user_id),
+      favoritesCount: length(article.article_favorites)
     }
   end
 
   # -------------------------------
 
-  defp favorited?(nil), do: false
-  defp favorited?([]), do: false
-  defp favorited?(_), do: true
+  defp favorited?(nil, _), do: false
+  defp favorited?([], _), do: false
+  defp favorited?(list, user_id) do
+    list
+    |> Enum.any?(fn af -> af.user_id == user_id end)
+  end
 end
