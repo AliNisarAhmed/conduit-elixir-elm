@@ -14,10 +14,10 @@ defmodule ConduitElixirWeb.Router do
     scope "/articles" do 
       get "/", ArticleController, :index 
       post "/", ArticleController, :create 
-      get "/:id", ArticleController, :show
     end
 
     scope "/articles/:slug" do 
+      get "/", ArticleController, :show
       post "/favorite", ArticleController, :favorite
       delete "/favorite", ArticleController, :unfavorite
     end

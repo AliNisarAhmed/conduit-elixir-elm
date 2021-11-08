@@ -26,8 +26,8 @@ defmodule ConduitElixirWeb.ArticleController do
     end
   end
 
-  def show(conn, %{"id" => id}) do
-    article = Articles.get_article!(id)
+  def show(conn, %{"slug" => slug}) do
+    article = Articles.get_article!(slug)
     render(conn, "show.json", article: article)
   end
 

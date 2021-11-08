@@ -39,12 +39,8 @@ defmodule ConduitElixir.Articles do
       ** (Ecto.NoResultsError)
 
   """
-  def get_article!(id) do
-    query =
-      from a in Article,
-        preload: [:tags, :article_favorites]
-
-    Repo.get!(query, id)
+  def get_article!(slug) do
+    get_article_by_slug(slug)
   end
 
   @doc """
