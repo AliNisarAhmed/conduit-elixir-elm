@@ -8,6 +8,7 @@ defmodule ConduitElixir.Articles do
 
   alias ConduitElixir.Articles.Article
   alias ConduitElixir.Favorites.ArticleFavorite
+  alias ConduitElixir.Auth.User
 
   @doc """
   Returns the list of articles.
@@ -23,6 +24,17 @@ defmodule ConduitElixir.Articles do
       from a in Article,
         preload: [:tags, :article_favorites]
     )
+  end
+
+  def list_articles_by_author(author) do
+    query =
+      from a in Article,
+        join: u in User,
+        on: a.user_id == u.id,
+        where: u.username == ^author,
+        preload: [:tags, :article_favorites]
+
+    Repo.all(query)
   end
 
   @doc """
@@ -56,9 +68,12 @@ defmodule ConduitElixir.Articles do
 
   """
   def create_article(attrs \\ %{}, current_user) do
-    %Article{}
-    |> Article.create_changeset(attrs, current_user)
-    |> Repo.insert()
+    {:ok, article } =
+      %Article{}
+      |> Article.create_changeset(attrs, current_user)
+      |> Repo.insert(returning: [:slug])
+
+    {:ok, get_article_by_slug(article.slug)}
   end
 
   @doc """

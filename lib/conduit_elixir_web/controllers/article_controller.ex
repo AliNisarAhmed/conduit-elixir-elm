@@ -10,6 +10,11 @@ defmodule ConduitElixirWeb.ArticleController do
 
   plug :require_authenticated_user when action in [:create, :favorite]
 
+  def index(conn, %{ "author" => author }) do 
+    articles = Articles.list_articles_by_author(author)
+    render(conn, "index.json", articles: articles)
+  end
+
   def index(conn, _params) do
     articles = Articles.list_articles()
     IO.inspect(articles)
