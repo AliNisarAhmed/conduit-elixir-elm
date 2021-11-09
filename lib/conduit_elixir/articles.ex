@@ -68,12 +68,18 @@ defmodule ConduitElixir.Articles do
 
   """
   def create_article(attrs \\ %{}, current_user) do
-    {:ok, article } =
+    create_article_resp =
       %Article{}
       |> Article.create_changeset(attrs, current_user)
       |> Repo.insert(returning: [:slug])
 
-    {:ok, get_article_by_slug(article.slug)}
+    case create_article_resp do
+      {:ok, article} ->
+        {:ok, get_article_by_slug(article.slug)}
+
+      e ->
+        e
+    end
   end
 
   @doc """

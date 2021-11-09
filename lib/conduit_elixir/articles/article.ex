@@ -31,18 +31,20 @@ defmodule ConduitElixir.Articles.Article do
     |> cast(attrs, [:title, :body, :description])
     |> validate_required([:title, :body])
     |> put_change(:user_id, current_user.id)
-    |> put_assoc(:tags, parse_tags(attrs["tagList"]))
+    |> put_assoc(:tags, parse_tags(Map.get(attrs, "tagList", [])))
     |> put_slug()
+    |> foreign_key_constraint(:user_id)
   end
 
   defp put_slug(changeset) do
     case fetch_change(changeset, :title) do
-      :error ->
-        changeset
-
       {:ok, title} ->
         changeset
         |> put_change(:slug, slugify_title(title))
+
+      _ ->
+        changeset
+
     end
   end
 

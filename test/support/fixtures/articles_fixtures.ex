@@ -1,5 +1,12 @@
 defmodule ConduitElixir.ArticlesFixtures do
+  alias ConduitElixir.Auth
   alias ConduitElixir.Auth.User
+  alias ConduitElixir.Articles.Article
+  alias ConduitElixir.Articles
+
+  alias ConduitElixir.Repo
+
+  import Ecto.Query, warn: false
 
   @moduledoc """
   This module defines test helpers for creating
@@ -10,15 +17,66 @@ defmodule ConduitElixir.ArticlesFixtures do
   Generate a article.
   """
   def article_fixture() do
-    {:ok, article} =
+    {:ok, current_user_1} =
+      Auth.register_user(%{
+        email: "test-1@test.com",
+        username: "test_user_1",
+        password: "abcd1234"
+      })
+
+    {:ok, current_user_2} =
+      Auth.register_user(%{
+        email: "test-2@test.com",
+        username: "test_user_2",
+        password: "abcd1234"
+      })
+
+    attrs_1 = [
       %{
-        "body" => "some body",
-        "description" => "some description",
-        "title" => "some title",
+        "body" => "some body 1",
+        "description" => "some description 1",
+        "title" => "some title 1",
+        "tagList" => []
+      },
+      %{
+        "body" => "some body 2",
+        "description" => "some description 2",
+        "title" => "some title 2",
         "tagList" => []
       }
-      |> ConduitElixir.Articles.create_article(%User{id: 1})
+    ]
 
-    article
+    attrs_2 = [
+      %{
+        "body" => "some body 3",
+        "description" => "some description 3",
+        "title" => "some title 3",
+        "tagList" => []
+      },
+      %{
+        "body" => "some body 4",
+        "description" => "some description 4",
+        "title" => "some title 4",
+        "tagList" => []
+      }
+    ]
+
+    for attr <- attrs_1 do
+      {:ok, article} =
+        attr
+        |> Articles.create_article(current_user_1)
+
+      article
+    end
+
+    for attr <- attrs_2 do
+      {:ok, article} =
+        attr
+        |> Articles.create_article(current_user_2)
+
+      article
+    end
+
+    Repo.all(from a in Article, preload: [:user])
   end
 end

@@ -2,17 +2,79 @@ defmodule ConduitElixir.ArticlesTest do
   use ConduitElixir.DataCase
 
   alias ConduitElixir.Articles
+  alias ConduitElixir.Auth
 
-  describe "article create changeset" do 
+  setup do
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Repo)
 
+    {:ok, current_user} =
+      Auth.register_user(%{
+        email: "test@test.com",
+        username: "test_user",
+        password: "abcd1234"
+      })
+
+    %{
+      current_user: current_user
+    }
+  end
+
+  describe "Articles Context - Create Article" do
     alias ConduitElixir.Articles.Article
     alias ConduitElixir.Auth.User
 
+    test "create_article/1 with valid data creates a article", context do
+      valid_attrs =
+        attrs = %{
+          "body" => "body 1",
+          "description" => "description 2",
+          "title" => "some title 1",
+          "tagList" => []
+        }
+
+      assert {:ok, %Article{} = article} =
+               Articles.create_article(valid_attrs, context.current_user)
+
+      assert article.body == "body 1"
+      assert article.description == "description 2"
+      assert article.title == "some title 1"
+      assert article.slug == "some-title-1"
+      assert article.user_id == context.current_user.id
+    end
+
+    test "create_article/1 with invalid data returns error changeset", context do
+      invalid_attrs = %{}
+
+      {:error, %Ecto.Changeset{} = changeset} =
+        Articles.create_article(invalid_attrs, context.current_user)
+    end
+  end
+
+  describe "Articles Context - List Articles" do
     import ConduitElixir.ArticlesFixtures
 
-    test "The title is slugified properly" do 
-      article = article_fixture()
-      assert article.slug == "some-title"
+    test "list_articles/0 returns all articles" do
+      articles = article_fixture()
+
+      assert length(Articles.list_articles()) == length(articles)
+    end
+
+    test "list_articles_by_author/1 returns articles only by that author" do
+      articles = article_fixture()
+
+      author_1 = "test_user_1"
+
+      assert length(Articles.list_articles_by_author(author_1)) ==
+               length(Enum.filter(articles, fn art -> art.user.username == author_1 end))
+
+      author_2 = "test_user_2"
+
+      assert length(Articles.list_articles_by_author(author_2)) ==
+               length(Enum.filter(articles, fn art -> art.user.username == author_2 end))
+
+      author_3 = "does_not_exist"
+
+      assert length(Articles.list_articles_by_author(author_3)) == 0
     end
   end
 
@@ -31,15 +93,6 @@ defmodule ConduitElixir.ArticlesTest do
   #   test "get_article!/1 returns the article with given id" do
   #     article = article_fixture()
   #     assert Articles.get_article!(article.id) == article
-  #   end
-
-  #   test "create_article/1 with valid data creates a article" do
-  #     valid_attrs = %{body: "some body", description: "some description", title: "some title"}
-
-  #     assert {:ok, %Article{} = article} = Articles.create_article(valid_attrs)
-  #     assert article.body == "some body"
-  #     assert article.description == "some description"
-  #     assert article.title == "some title"
   #   end
 
   #   test "create_article/1 with invalid data returns error changeset" do
@@ -74,4 +127,3 @@ defmodule ConduitElixir.ArticlesTest do
   #   end
   # end
 end
-
