@@ -4,18 +4,18 @@ defmodule ConduitElixirWeb.ArticleView do
   alias ConduitElixirWeb.ArticleView
   alias ConduitElixirWeb.TagView
 
-  def render("index.json", %{articles: articles}) do
+  def render("index.json", %{articles: articles, current_user: current_user}) do
     %{
-      articles: render_many(articles, ArticleView, "article.json"),
+      articles: render_many(articles, ArticleView, "article.json", %{current_user: current_user}),
       articlesCount: length(articles)
     }
   end
 
-  def render("show.json", %{article: article}) do
-    %{article: render_one(article, ArticleView, "article.json")}
+  def render("show.json", %{article: article, current_user: current_user}) do
+    %{article: render_one(article, ArticleView, "article.json", %{current_user: current_user})}
   end
 
-  def render("article.json", %{article: article}) do
+  def render("article.json", %{article: article, current_user: current_user}) do
     %{
       id: article.id,
       title: article.title,
@@ -26,7 +26,7 @@ defmodule ConduitElixirWeb.ArticleView do
       tagList: TagView.render("index.json", tags: article.tags),
       author: article.user_id,
       slug: article.slug,
-      favorited: favorited?(article.article_favorites, article.user_id),
+      favorited: favorited?(article.article_favorites, current_user.id),
       favoritesCount: length(article.article_favorites)
     }
   end

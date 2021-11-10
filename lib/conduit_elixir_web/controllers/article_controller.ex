@@ -8,17 +8,16 @@ defmodule ConduitElixirWeb.ArticleController do
 
   action_fallback ConduitElixirWeb.FallbackController
 
-  plug :require_authenticated_user when action in [:create, :favorite]
+  plug :require_authenticated_user when action in [:index, :create, :favorite]
 
-  def index(conn, %{ "author" => author }) do 
+  def index(%Plug.Conn{assigns: assigns} = conn, %{"author" => author}) do
     articles = Articles.list_articles_by_author(author)
-    render(conn, "index.json", articles: articles)
+    render(conn, "index.json", articles: articles, current_user: assigns.current_user)
   end
 
-  def index(conn, _params) do
+  def index(%Plug.Conn{assigns: assigns} = conn, _params) do
     articles = Articles.list_articles()
-    IO.inspect(articles)
-    render(conn, "index.json", articles: articles)
+    render(conn, "index.json", articles: articles, current_user: assigns.current_user)
   end
 
   def create(%Plug.Conn{assigns: assigns} = conn, %{"article" => article_params}) do
@@ -27,7 +26,7 @@ defmodule ConduitElixirWeb.ArticleController do
       conn
       |> put_status(:created)
       |> put_resp_header("location", Routes.article_path(conn, :show, article))
-      |> render("show.json", article: article)
+      |> render("show.json", article: article, current_user: assigns.current_user)
     end
   end
 
@@ -54,15 +53,15 @@ defmodule ConduitElixirWeb.ArticleController do
 
   # -------- Favorite -------------
 
-  def favorite(conn, %{"slug" => slug}) do
+  def favorite(%Plug.Conn{assigns: assigns} = conn, %{"slug" => slug}) do
     with {:ok, article} <- Articles.favorite_article(conn.assigns.current_user.id, slug) do
-      render(conn, "show.json", article: article)
+      render(conn, "show.json", article: article, current_user: assigns.current_user)
     end
   end
 
-  def unfavorite(conn, %{"slug" => slug}) do
+  def unfavorite(%Plug.Conn{assigns: assigns} = conn, %{"slug" => slug}) do
     with {:ok, article} <- Articles.unfavorite_article(conn.assigns.current_user.id, slug) do
-      render(conn, "show.json", article: article)
+      render(conn, "show.json", article: article, current_user: assigns.current_user)
     end
   end
 end

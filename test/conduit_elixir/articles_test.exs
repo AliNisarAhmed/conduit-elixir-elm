@@ -2,7 +2,10 @@ defmodule ConduitElixir.ArticlesTest do
   use ConduitElixir.DataCase
 
   alias ConduitElixir.Articles
+  alias ConduitElixir.Articles.Article
   alias ConduitElixir.Auth
+
+  import ConduitElixir.ArticlesFixtures
 
   setup do
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(Repo)
@@ -20,9 +23,6 @@ defmodule ConduitElixir.ArticlesTest do
   end
 
   describe "Articles Context - Create Article" do
-    alias ConduitElixir.Articles.Article
-    alias ConduitElixir.Auth.User
-
     test "create_article/1 with valid data creates a article", context do
       valid_attrs =
         attrs = %{
@@ -51,8 +51,6 @@ defmodule ConduitElixir.ArticlesTest do
   end
 
   describe "Articles Context - List Articles" do
-    import ConduitElixir.ArticlesFixtures
-
     test "list_articles/0 returns all articles" do
       articles = article_fixture()
 
@@ -75,6 +73,41 @@ defmodule ConduitElixir.ArticlesTest do
       author_3 = "does_not_exist"
 
       assert length(Articles.list_articles_by_author(author_3)) == 0
+    end
+  end
+
+  describe "Articles Context - Favorite & Unfavorite" do
+    test "User can favorite an article", context do
+      articles = article_fixture()
+      slug = "some-title-1"
+
+      assert {:ok, %Article{} = article} =
+               Articles.favorite_article(context.current_user.id, slug)
+
+      assert article.slug == slug
+      assert article.title == "some title 1"
+      assert length(article.article_favorites) == 1
+
+      assert Enum.any?(article.article_favorites, fn af ->
+               af.user_id == context.current_user.id
+             end) == true
+    end
+
+    test "User can unfavorite an article", context do
+      articles = article_fixture()
+      slug = "some-title-4"
+
+      Articles.favorite_article(context.current_user.id, slug)
+
+      assert {:ok, %Article{} = article} =
+               Articles.unfavorite_article(context.current_user.id, slug)
+
+      assert article.slug == slug
+      assert article.title == "some title 4"
+
+      assert Enum.any?(article.article_favorites, fn af ->
+               af.user_id == context.current_user.id
+             end) == false
     end
   end
 
