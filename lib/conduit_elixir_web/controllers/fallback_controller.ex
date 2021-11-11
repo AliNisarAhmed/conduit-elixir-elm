@@ -19,6 +19,7 @@ defmodule ConduitElixirWeb.FallbackController do
     conn
     |> put_status(:not_found)
     |> put_view(ConduitElixirWeb.ErrorView)
-    |> render(:"404")
+    |> render("404.json")
   end
+
 end

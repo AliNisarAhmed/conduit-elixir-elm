@@ -30,21 +30,30 @@ defmodule ConduitElixirWeb.ArticleController do
     end
   end
 
-  def show(conn, %{"slug" => slug}) do
-    article = Articles.get_article!(slug)
-    render(conn, "show.json", article: article)
+  def show(conn, %{"slug" => _slug} = params) do
+    case Articles.get_article(params) do
+      nil ->
+        {:error, :not_found}
+
+      article ->
+        render(conn, "show.json", article: article)
+    end
   end
 
   def update(conn, %{"id" => id, "article" => article_params}) do
-    article = Articles.get_article!(id)
+    case Articles.get_article(id) do
+      nil ->
+        {:error, :not_found}
 
-    with {:ok, %Article{} = article} <- Articles.update_article(article, article_params) do
-      render(conn, "show.json", article: article)
+      article ->
+        with {:ok, %Article{} = article} <- Articles.update_article(article, article_params) do
+          render(conn, "show.json", article: article)
+        end
     end
   end
 
   def delete(conn, %{"id" => id}) do
-    article = Articles.get_article!(id)
+    article = Articles.get_article(id)
 
     with {:ok, %Article{}} <- Articles.delete_article(article) do
       send_resp(conn, :no_content, "")

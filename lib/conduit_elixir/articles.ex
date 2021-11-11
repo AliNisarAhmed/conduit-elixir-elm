@@ -38,9 +38,9 @@ defmodule ConduitElixir.Articles do
   end
 
   @doc """
-  Gets a single article.
+  Gets a single article by slug or id
 
-  Raises `Ecto.NoResultsError` if the Article does not exist.
+  Returns nil if the article does not exist
 
   ## Examples
 
@@ -51,8 +51,12 @@ defmodule ConduitElixir.Articles do
       ** (Ecto.NoResultsError)
 
   """
-  def get_article!(slug) do
+  def get_article(%{"slug" => slug}) do
     get_article_by_slug(slug)
+  end
+
+  def get_article(%{"id" => id}) do
+    get_article_by_id(id)
   end
 
   @doc """
@@ -158,7 +162,15 @@ defmodule ConduitElixir.Articles do
       from a in Article,
         preload: [:tags, :article_favorites]
 
-    Repo.get_by!(query, slug: slug)
+    Repo.get_by(query, slug: slug)
+  end
+
+  defp get_article_by_id(id) do
+    query =
+      from a in Article,
+        preload: [:tags, :article_favorites]
+
+    Repo.get_by(query, id: id)
   end
 
   # @doc """
