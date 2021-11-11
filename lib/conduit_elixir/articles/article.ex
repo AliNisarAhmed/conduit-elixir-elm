@@ -36,6 +36,14 @@ defmodule ConduitElixir.Articles.Article do
     |> foreign_key_constraint(:user_id)
   end
 
+  @doc false 
+  def update_changeset(article, attrs) do 
+    article 
+    |> cast(attrs, [:body, :description])
+  end
+
+  # ------------------------------------------------------------------------
+
   defp put_slug(changeset) do
     case fetch_change(changeset, :title) do
       {:ok, title} ->

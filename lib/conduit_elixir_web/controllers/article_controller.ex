@@ -30,8 +30,8 @@ defmodule ConduitElixirWeb.ArticleController do
     end
   end
 
-  def show(conn, %{"slug" => _slug} = params) do
-    case Articles.get_article(params) do
+  def show(conn, %{"slug" => slug}) do
+    case Articles.get_article(slug) do
       nil ->
         {:error, :not_found}
 
@@ -40,8 +40,8 @@ defmodule ConduitElixirWeb.ArticleController do
     end
   end
 
-  def update(conn, %{"id" => id, "article" => article_params}) do
-    case Articles.get_article(id) do
+  def update(conn, %{"slug" => slug, "article" => article_params}) do
+    case Articles.get_article(slug) do
       nil ->
         {:error, :not_found}
 

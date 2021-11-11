@@ -51,13 +51,10 @@ defmodule ConduitElixir.Articles do
       ** (Ecto.NoResultsError)
 
   """
-  def get_article(%{"slug" => slug}) do
+  def get_article(slug) do
     get_article_by_slug(slug)
   end
 
-  def get_article(%{"id" => id}) do
-    get_article_by_id(id)
-  end
 
   @doc """
   Creates a article.
@@ -98,10 +95,10 @@ defmodule ConduitElixir.Articles do
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_article(%Article{} = article, _attrs) do
+  def update_article(%Article{} = article, attrs) do
     article
-    # |> Article.changeset(attrs)
-    # |> Repo.update()
+    |> Article.update_changeset(attrs)
+    |> Repo.update()
   end
 
   @doc """
@@ -163,14 +160,6 @@ defmodule ConduitElixir.Articles do
         preload: [:tags, :article_favorites]
 
     Repo.get_by(query, slug: slug)
-  end
-
-  defp get_article_by_id(id) do
-    query =
-      from a in Article,
-        preload: [:tags, :article_favorites]
-
-    Repo.get_by(query, id: id)
   end
 
   # @doc """
