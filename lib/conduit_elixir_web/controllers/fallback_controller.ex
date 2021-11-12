@@ -22,4 +22,11 @@ defmodule ConduitElixirWeb.FallbackController do
     |> render("404.json")
   end
 
+  def call(conn, {:error, :unauthorized}) do
+    conn
+    |> put_status(:unauthorized)
+    |> put_view(ConduitElixirWeb.ErrorView)
+    |> render("401.json")
+  end
+
 end

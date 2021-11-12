@@ -17,10 +17,10 @@ defmodule ConduitElixir.Articles.Article do
     field :title, :string
     field :slug, :string
 
-    many_to_many :tags, Tag, join_through: ArticleTag, on_replace: :delete
+    many_to_many :tags, Tag, join_through: ArticleTag, on_replace: :delete, on_delete: :delete_all
     belongs_to :user, User
 
-    has_many :article_favorites, ArticleFavorite
+    has_many :article_favorites, ArticleFavorite, on_delete: :delete_all
 
     timestamps(@timestamps_opts)
   end
@@ -36,9 +36,9 @@ defmodule ConduitElixir.Articles.Article do
     |> foreign_key_constraint(:user_id)
   end
 
-  @doc false 
-  def update_changeset(article, attrs) do 
-    article 
+  @doc false
+  def update_changeset(article, attrs) do
+    article
     |> cast(attrs, [:body, :description])
   end
 
@@ -52,7 +52,6 @@ defmodule ConduitElixir.Articles.Article do
 
       _ ->
         changeset
-
     end
   end
 

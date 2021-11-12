@@ -11,6 +11,10 @@ defmodule ConduitElixirWeb.ErrorView do
     %{errors: %{body: "Not found"}}
   end
 
+  def render("401.json", _assigns) do 
+    %{errors: %{body: "Unauthorized"}}
+  end
+
   # By default, Phoenix returns the status message from
   # the template name. For example, "404.json" becomes
   # "Not Found".

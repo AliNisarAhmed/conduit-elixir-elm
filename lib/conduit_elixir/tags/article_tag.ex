@@ -15,6 +15,8 @@ defmodule ConduitElixir.Tags.ArticleTag do
     tag
     |> cast(attrs, [:article_id, :tag_id])
     |> validate_required([:article_id, :tag_id])
+    |> foreign_key_constraint(:tag_id)
+    |> foreign_key_constraint(:article_id)
     |> unique_constraint([:article_id, :tag_id])
   end
 end
