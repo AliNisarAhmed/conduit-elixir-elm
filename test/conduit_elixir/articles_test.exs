@@ -5,7 +5,7 @@ defmodule ConduitElixir.ArticlesTest do
   alias ConduitElixir.Articles.Article
   alias ConduitElixir.Auth
 
-  import ConduitElixir.ArticlesFixtures
+  import ConduitElixir.ArticleFixtures
 
   setup do
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(Repo)
@@ -52,13 +52,13 @@ defmodule ConduitElixir.ArticlesTest do
 
   describe "Articles Context - List Articles" do
     test "list_articles/0 returns all articles" do
-      articles = article_fixture()
+      %{articles: articles} = article_fixture()
 
       assert length(Articles.list_articles()) == length(articles)
     end
 
     test "list_articles_by_author/1 returns articles only by that author" do
-      articles = article_fixture()
+      %{articles: articles} = article_fixture()
 
       author_1 = "test_user_1"
 
@@ -78,7 +78,7 @@ defmodule ConduitElixir.ArticlesTest do
 
   describe "Articles Context - Favorite & Unfavorite" do
     test "User can favorite an article", context do
-      articles = article_fixture()
+      %{articles: articles} = article_fixture()
       slug = "some-title-1"
 
       assert {:ok, %Article{} = article} =
@@ -94,7 +94,7 @@ defmodule ConduitElixir.ArticlesTest do
     end
 
     test "User can unfavorite an article", context do
-      articles = article_fixture()
+      %{articles: articles} = article_fixture()
       slug = "some-title-4"
 
       Articles.favorite_article(context.current_user.id, slug)

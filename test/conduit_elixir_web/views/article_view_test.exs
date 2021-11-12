@@ -2,7 +2,7 @@ defmodule ConduitElixirWeb.ArticleViewTest do
   use ConduitElixirWeb.ConnCase, async: true
 
   import Phoenix.View
-  import ConduitElixir.ArticlesFixtures
+  import ConduitElixir.ArticleFixtures
 
   alias ConduitElixirWeb.ArticleView
   alias ConduitElixir.Auth
@@ -21,7 +21,7 @@ defmodule ConduitElixirWeb.ArticleViewTest do
   end
 
   test "Renders an article favorited by someone other than current user", context do
-    articles = article_fixture()
+    %ConduitElixir.ArticleFixtures{articles: articles} = article_fixture()
 
     # Getting an article favorited by someone other than current_user
     {article, _} =

@@ -1,4 +1,6 @@
-defmodule ConduitElixir.ArticlesFixtures do
+defmodule ConduitElixir.ArticleFixtures do
+  defstruct [:current_user_1, :current_user_2, articles: []]
+
   alias ConduitElixir.Auth
   alias ConduitElixir.Articles.Article
   alias ConduitElixir.Articles
@@ -78,6 +80,12 @@ defmodule ConduitElixir.ArticlesFixtures do
 
     Articles.favorite_article(current_user_1.id, "some-title-4")
 
-    Repo.all(from a in Article, preload: [:user, :tags, :article_favorites])
+    articles = Repo.all(from a in Article, preload: [:user, :tags, :article_favorites])
+
+    %ConduitElixir.ArticleFixtures{
+      current_user_1: current_user_1,
+      current_user_2: current_user_2,
+      articles: articles
+    }
   end
 end
