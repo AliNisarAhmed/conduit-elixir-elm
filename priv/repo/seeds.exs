@@ -79,3 +79,47 @@ ConduitElixir.Articles.favorite_article(user2.id, article1.slug)
 ConduitElixir.Articles.favorite_article(user2.id, article2.slug)
 ConduitElixir.Articles.favorite_article(user1.id, article3.slug)
 ConduitElixir.Articles.favorite_article(user1.id, article4.slug)
+
+comment1_attr = %{
+  body: "Comment 1"
+}
+
+comment2_attr = %{
+  body: "Comment 2"
+}
+
+comment3_attr = %{
+  body: "Comment 3"
+}
+
+comment4_attr = %{
+  body: "Comment 4"
+}
+
+comment5_attr = %{
+  body: "Comment 5"
+}
+
+comment6_attr = %{
+  body: "Comment 6"
+}
+
+comment7_attr = %{
+  body: "Comment 7"
+}
+
+comment8_attr = %{
+  body: "Comment 8"
+}
+
+ConduitElixir.Comments.create_comment_on_article(article1.slug, comment1_attr, user1)
+ConduitElixir.Comments.create_comment_on_article(article1.slug, comment2_attr, user2)
+
+ConduitElixir.Comments.create_comment_on_article(article2.slug, comment3_attr, user1)
+ConduitElixir.Comments.create_comment_on_article(article2.slug, comment4_attr, user2)
+
+ConduitElixir.Comments.create_comment_on_article(article3.slug, comment5_attr, user1)
+ConduitElixir.Comments.create_comment_on_article(article3.slug, comment6_attr, user2)
+
+ConduitElixir.Comments.create_comment_on_article(article4.slug, comment7_attr, user1)
+ConduitElixir.Comments.create_comment_on_article(article4.slug, comment8_attr, user2)
