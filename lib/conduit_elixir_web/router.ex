@@ -24,6 +24,10 @@ defmodule ConduitElixirWeb.Router do
       delete "/favorite", ArticleController, :unfavorite
     end
 
+    scope "/articles/:slug/comments" do 
+      post "/", CommentController, :create
+    end
+
     scope "/users" do 
       post "/", AuthController, :register
       post "/login", AuthController, :login

@@ -4,6 +4,7 @@ defmodule ConduitElixir.Auth.User do
 
   alias ConduitElixir.Articles.Article
   alias ConduitElixir.Favorites.ArticleFavorite
+  alias ConduitElixir.Comments.ArticleComment
 
   @timestamps_opts [type: :utc_datetime_usec, usec: true]
 
@@ -14,8 +15,9 @@ defmodule ConduitElixir.Auth.User do
     field :username, :string
     field :bio, :string
 
-    has_many :articles, Article
-    has_many :article_favorites, ArticleFavorite
+    has_many :articles, Article, on_delete: :delete_all
+    has_many :article_favorites, ArticleFavorite, on_delete: :delete_all
+    has_many :article_comments, ArticleComment, on_delete: :delete_all
 
     timestamps(@timestamps_opts)
   end
@@ -28,13 +30,13 @@ defmodule ConduitElixir.Auth.User do
     |> validate_password(opts)
   end
 
-  def assoc_changeset(user, attrs) do 
-    user 
+  def assoc_changeset(user, attrs) do
+    user
     |> cast(attrs, [])
   end
 
-  def valid_password?(%ConduitElixir.Auth.User{hashed_password: hashed_password}, password) 
-    when is_binary(hashed_password) and byte_size(password) > 0 do 
+  def valid_password?(%ConduitElixir.Auth.User{hashed_password: hashed_password}, password)
+      when is_binary(hashed_password) and byte_size(password) > 0 do
     Bcrypt.verify_pass(password, hashed_password)
   end
 
@@ -60,22 +62,22 @@ defmodule ConduitElixir.Auth.User do
     |> unique_constraint(:username)
   end
 
-  defp validate_password(changeset, opts) do 
-    changeset 
+  defp validate_password(changeset, opts) do
+    changeset
     |> validate_required([:password])
     |> validate_length(:password, min: 8, max: 80)
     |> maybe_hash_password(opts)
   end
 
-  defp maybe_hash_password(changeset, opts) do 
+  defp maybe_hash_password(changeset, opts) do
     hashed_password? = Keyword.get(opts, :hash_password, true)
     password = get_change(changeset, :password)
 
-    if hashed_password? && password && changeset.valid? do 
-      changeset 
+    if hashed_password? && password && changeset.valid? do
+      changeset
       |> put_change(:hashed_password, Bcrypt.hash_pwd_salt(password))
       |> delete_change(:password)
-    else 
+    else
       changeset
     end
   end

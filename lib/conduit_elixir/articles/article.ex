@@ -8,6 +8,7 @@ defmodule ConduitElixir.Articles.Article do
   alias ConduitElixir.Tags.ArticleTag
   alias ConduitElixir.Auth.User
   alias ConduitElixir.Favorites.ArticleFavorite
+  alias ConduitElixir.Comments.ArticleComment
 
   @timestamps_opts [type: :utc_datetime_usec, usec: true]
 
@@ -21,6 +22,7 @@ defmodule ConduitElixir.Articles.Article do
     belongs_to :user, User
 
     has_many :article_favorites, ArticleFavorite, on_delete: :delete_all
+    has_many :article_comments, ArticleComment, on_delete: :delete_all
 
     timestamps(@timestamps_opts)
   end
