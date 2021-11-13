@@ -15,6 +15,11 @@ defmodule ConduitElixirWeb.ArticleController do
     render(conn, "index.json", articles: articles, current_user: assigns.current_user)
   end
 
+  def index(%Plug.Conn{assigns: assigns} = conn, %{"tag" => tag}) do 
+    articles = Articles.list_articles_by_tag(tag)
+    render(conn, "index.json", articles: articles, current_user: assigns.current_user)
+  end
+
   def index(%Plug.Conn{assigns: assigns} = conn, _params) do
     articles = Articles.list_articles()
     render(conn, "index.json", articles: articles, current_user: assigns.current_user)

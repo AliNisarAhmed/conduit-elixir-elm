@@ -37,6 +37,17 @@ defmodule ConduitElixir.Articles do
     Repo.all(query)
   end
 
+  def list_articles_by_tag(tag) do 
+    query = 
+      from a in Article, 
+      join: t in assoc(a, :tags),
+      where: t.title == ^tag,
+      order_by: [desc: a.inserted_at],
+      preload: [:article_favorites, :tags]
+
+    Repo.all(query)
+  end
+
   @doc """
   Gets a single article by slug or id
 
