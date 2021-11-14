@@ -3,6 +3,10 @@ defmodule ConduitElixirWeb.CommentView do
 
   alias ConduitElixirWeb.CommentView
 
+  def render("index.json", %{comments: comments}) do
+    %{comments: render_many(comments, CommentView, "comment.json")}
+  end
+
   def render("show.json", %{comment: comment}) do
     %{comment: render_one(comment, CommentView, "comment.json")}
   end

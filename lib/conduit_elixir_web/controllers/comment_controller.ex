@@ -8,7 +8,15 @@ defmodule ConduitElixirWeb.CommentController do
 
   action_fallback ConduitElixirWeb.FallbackController
 
-  plug :require_authenticated_user when action in [:create]
+  plug :require_authenticated_user when action in [:index, :create]
+
+  def index(%Plug.Conn{} = conn, %{"slug" => slug}) do 
+    with comments <- Comments.get_all_comments_on_article(slug) do 
+      conn 
+      |> put_status(200)
+      |> render("index.json", comments: comments)
+    end
+  end
 
   def create(%Plug.Conn{assigns: assigns} = conn, %{"slug" => slug, "comment" => comment_params}) do
     with {:ok, %ArticleComment{} = comment} <-

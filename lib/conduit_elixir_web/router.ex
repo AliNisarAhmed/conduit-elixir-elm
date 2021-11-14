@@ -25,6 +25,7 @@ defmodule ConduitElixirWeb.Router do
     end
 
     scope "/articles/:slug/comments" do 
+      get "/", CommentController, :index
       post "/", CommentController, :create
     end
 
