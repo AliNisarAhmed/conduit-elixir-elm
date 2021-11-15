@@ -17,12 +17,59 @@ defmodule ConduitElixirWeb.ArticleControllerTest do
   }
   @invalid_attrs %{body: nil, description: nil, title: nil}
 
-  # describe "index" do
-  #   test "lists all articles", %{conn: conn} do
-  #     conn = get(conn, Routes.article_path(conn, :index))
-  #     assert json_response(conn, 200)["data"] == []
-  #   end
-  # end
+  describe "List all articles" do
+    setup [:setup_fixture, :login_user_1]
+
+    test "lists all articles", %{conn: conn, articles: articles} do
+      conn = get(conn, Routes.article_path(conn, :index))
+      assert json_response(conn, 200)["articles"] |> length() |> Kernel.==(length(articles))
+    end
+
+    test "lists all articles for an author", %{conn: conn, current_user_2: current_user_2} do
+      conn = get(conn, Routes.article_path(conn, :index), %{author: current_user_2.username})
+      article_resp = json_response(conn, 200)["articles"]
+      assert article_resp != []
+      assert Enum.all?(article_resp, fn article -> article["author"] == current_user_2.id end)
+
+      assert Enum.map(article_resp, fn article -> article["slug"] end) == [
+               "some-title-3",
+               "some-title-4"
+             ]
+    end
+
+    test "list all articles for a tag", %{conn: conn, articles: articles} do
+      conn = get(conn, Routes.article_path(conn, :index), %{tag: "all"})
+      article_resp = json_response(conn, 200)["articles"]
+
+      assert article_resp != []
+
+      assert Enum.all?(article_resp, fn article ->
+               article["tagList"] |> Enum.member?("all")
+             end)
+
+      assert length(article_resp) == length(articles)
+
+      # Fetch again for a different tag
+      conn = get(conn, Routes.article_path(conn, :index), %{tag: "tagUser1"})
+      article_resp = json_response(conn, 200)["articles"]
+
+      assert article_resp != []
+
+      assert Enum.all?(article_resp, fn article ->
+               article["tagList"] |> Enum.member?("tagUser1")
+             end)
+
+      assert length(article_resp) ==
+               length(
+                 Enum.filter(
+                   articles,
+                   &(Map.get(&1, :tags, [])
+                     |> Enum.map(fn tag -> tag.title end)
+                     |> Enum.member?("tagUser1"))
+                 )
+               )
+    end
+  end
 
   describe "create article" do
     setup [:setup_fixture, :login_user_1]

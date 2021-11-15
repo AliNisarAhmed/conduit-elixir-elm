@@ -37,13 +37,13 @@ defmodule ConduitElixir.ArticleFixtures do
         "body" => "some body 1",
         "description" => "some description 1",
         "title" => "some title 1",
-        "tagList" => []
+        "tagList" => ["tagUser1", "all"]
       },
       %{
         "body" => "some body 2",
         "description" => "some description 2",
         "title" => "some title 2",
-        "tagList" => []
+        "tagList" => ["tagUser1", "all"]
       }
     ]
 
@@ -52,13 +52,13 @@ defmodule ConduitElixir.ArticleFixtures do
         "body" => "some body 3",
         "description" => "some description 3",
         "title" => "some title 3",
-        "tagList" => []
+        "tagList" => ["tagUser2", "all"]
       },
       %{
         "body" => "some body 4",
         "description" => "some description 4",
         "title" => "some title 4",
-        "tagList" => []
+        "tagList" => ["tagUser2", "all"]
       }
     ]
 
