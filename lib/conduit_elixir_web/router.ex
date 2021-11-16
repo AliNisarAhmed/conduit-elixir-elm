@@ -34,6 +34,10 @@ defmodule ConduitElixirWeb.Router do
       post "/login", AuthController, :login
     end
 
+    scope "/profiles" do 
+      get "/:username", ProfileController, :show
+    end
+
   end
 
   # Enables LiveDashboard only for development
