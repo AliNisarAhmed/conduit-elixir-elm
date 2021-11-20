@@ -13,7 +13,14 @@ defmodule ConduitElixirWeb.ProfileView do
   def render("profile.json", %{user_profile: user_profile}) do
     %{
       username: user_profile.username,
-      bio: user_profile.bio
+      bio: user_profile.bio,
+      following: current_user_following?(user_profile.followers)
     }
   end
+
+  # --------------------------------------------------------------
+
+  defp current_user_following?([]), do: false
+  defp current_user_following?(nil), do: false
+  defp current_user_following?(_), do: true
 end
