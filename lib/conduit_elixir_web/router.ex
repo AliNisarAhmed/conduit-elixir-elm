@@ -36,6 +36,7 @@ defmodule ConduitElixirWeb.Router do
 
     scope "/profiles" do 
       get "/:username", ProfileController, :show
+      post "/:username/follow", ProfileController, :follow_user
     end
 
   end

@@ -17,6 +17,10 @@ defmodule ConduitElixir.Auth do
     Repo.get_by(User, id: user_id)
   end
 
+  def get_user_by_username(username) do 
+    Repo.get_by(User, username: username)
+  end
+
   def get_user_by_email_and_password(email, password)
       when is_binary(email) and is_binary(password) do
     user = Repo.get_by(User, email: email)
