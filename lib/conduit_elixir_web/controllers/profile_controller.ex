@@ -5,7 +5,7 @@ defmodule ConduitElixirWeb.ProfileController do
 
   import ConduitElixirWeb.Plugs.Auth
 
-  plug :require_authenticated_user when action in [:follow_user]
+  plug :require_authenticated_user when action in [:follow_user, :unfollow_user]
 
   def show(%Plug.Conn{} = conn, %{"username" => username}) do
     case Profiles.get_profile(username) do
@@ -19,4 +19,11 @@ defmodule ConduitElixirWeb.ProfileController do
       render(conn, "show_profile.json", user_profile: user_profile)
     end
   end
+
+  def unfollow_user(%Plug.Conn{assigns: assigns} = conn, %{"username" => username}) do 
+    with user_profile <- Profiles.unfollow_user(username, assigns.current_user) do 
+      render(conn, "show_profile.json", user_profile: user_profile)
+    end
+  end
+
 end
