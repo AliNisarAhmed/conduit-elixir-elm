@@ -8,6 +8,7 @@ defmodule ConduitElixir.Articles do
 
   alias ConduitElixir.Articles.Article
   alias ConduitElixir.Favorites.ArticleFavorite
+  alias ConduitElixir.Auth
   alias ConduitElixir.Auth.User
 
   @doc """
@@ -26,26 +27,50 @@ defmodule ConduitElixir.Articles do
     )
   end
 
-  def list_articles_by_author(author) do
+  def list_articles_by_author(author_user_name) do
+    case Auth.get_user_by_username(author_user_name) do
+      nil ->
+        {:error, :not_found}
+
+      author ->
+        query =
+          from a in Article,
+            join: u in User,
+            on: a.user_id == u.id,
+            where: u.username == ^author.username,
+            preload: [:tags, :article_favorites]
+
+        Repo.all(query)
+    end
+  end
+
+  def list_articles_by_tag(tag) do
     query =
       from a in Article,
-        join: u in User,
-        on: a.user_id == u.id,
-        where: u.username == ^author,
-        preload: [:tags, :article_favorites]
+        join: t in assoc(a, :tags),
+        where: t.title == ^tag,
+        order_by: [desc: a.inserted_at],
+        preload: [:article_favorites, :tags]
 
     Repo.all(query)
   end
 
-  def list_articles_by_tag(tag) do 
-    query = 
-      from a in Article, 
-      join: t in assoc(a, :tags),
-      where: t.title == ^tag,
-      order_by: [desc: a.inserted_at],
-      preload: [:article_favorites, :tags]
+  def list_articles_favorited_by_username(username) do
+    case Auth.get_user_by_username(username) do
+      nil ->
+        {:error, :not_found}
 
-    Repo.all(query)
+      user ->
+        query =
+          from a in Article,
+            join: af in assoc(a, :article_favorites),
+            where: af.user_id == ^user.id,
+            where: a.id == af.article_id,
+            order_by: [desc: a.inserted_at],
+            preload: [:article_favorites, :tags]
+
+        {:ok, Repo.all(query)}
+    end
   end
 
   @doc """
@@ -65,7 +90,6 @@ defmodule ConduitElixir.Articles do
   def get_article(slug) do
     get_article_by_slug(slug)
   end
-
 
   @doc """
   Creates a article.

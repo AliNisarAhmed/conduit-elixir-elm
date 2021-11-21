@@ -11,13 +11,20 @@ defmodule ConduitElixirWeb.ArticleController do
   plug :require_authenticated_user when action in [:index, :create, :update, :delete, :favorite]
 
   def index(%Plug.Conn{assigns: assigns} = conn, %{"author" => author}) do
-    articles = Articles.list_articles_by_author(author)
+    with {:ok, articles} <- Articles.list_articles_by_author(author) do
+      render(conn, "index.json", articles: articles, current_user: assigns.current_user)
+    end
+  end
+
+  def index(%Plug.Conn{assigns: assigns} = conn, %{"tag" => tag}) do
+    articles = Articles.list_articles_by_tag(tag)
     render(conn, "index.json", articles: articles, current_user: assigns.current_user)
   end
 
-  def index(%Plug.Conn{assigns: assigns} = conn, %{"tag" => tag}) do 
-    articles = Articles.list_articles_by_tag(tag)
-    render(conn, "index.json", articles: articles, current_user: assigns.current_user)
+  def index(%Plug.Conn{assigns: assigns} = conn, %{"favorited" => username}) do
+    with {:ok, articles} <- Articles.list_articles_favorited_by_username(username) do
+      render(conn, "index.json", articles: articles, current_user: assigns.current_user)
+    end
   end
 
   def index(%Plug.Conn{assigns: assigns} = conn, _params) do
