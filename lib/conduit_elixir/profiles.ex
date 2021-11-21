@@ -18,7 +18,6 @@ defmodule ConduitElixir.Profiles do
       where: uf.id == ^current_user.id
 
     Repo.one(from u in user_query, preload: [followers: ^follower_query])
-    |> IO.inspect()
   end
 
   def follow_user(username, current_user) do
