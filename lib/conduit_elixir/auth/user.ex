@@ -16,6 +16,7 @@ defmodule ConduitElixir.Auth.User do
     field :hashed_password, :string
     field :username, :string
     field :bio, :string
+    field :image, :string
 
     has_many :articles, Article, on_delete: :delete_all
     has_many :article_favorites, ArticleFavorite, on_delete: :delete_all
@@ -39,7 +40,7 @@ defmodule ConduitElixir.Auth.User do
 
   def registation_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:email, :username, :password, :bio])
+    |> cast(attrs, [:email, :username, :password, :bio, :image])
     |> validate_email()
     |> validate_username()
     |> validate_password(opts)

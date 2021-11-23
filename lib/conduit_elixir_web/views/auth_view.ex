@@ -4,7 +4,7 @@ defmodule ConduitElixirWeb.AuthView do
   alias ConduitElixirWeb.AuthView
 
   def render("register.json", %{:user => user}) do
-    render_one(user, AuthView, "user.json", as: :user)
+    %{user: render_one(user, AuthView, "user.json", as: :user)}
   end
 
   def render("login.json", %{token: token, user: user}) do
@@ -18,7 +18,8 @@ defmodule ConduitElixirWeb.AuthView do
       id: user.id,
       username: user.username,
       email: user.email,
-      bio: user.bio
+      bio: user.bio,
+      image: user.image
     }
   end
 end
