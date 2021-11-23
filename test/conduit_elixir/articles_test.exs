@@ -61,18 +61,20 @@ defmodule ConduitElixir.ArticlesTest do
       %{articles: articles} = article_fixture()
 
       author_1 = "test_user_1"
+      {:ok, articles_1} = Articles.list_articles_by_author(author_1)
 
-      assert length(Articles.list_articles_by_author(author_1)) ==
+      assert length(articles_1) ==
                length(Enum.filter(articles, fn art -> art.user.username == author_1 end))
 
       author_2 = "test_user_2"
+      {:ok, articles_2} = Articles.list_articles_by_author(author_2)
 
-      assert length(Articles.list_articles_by_author(author_2)) ==
+      assert length(articles_2) ==
                length(Enum.filter(articles, fn art -> art.user.username == author_2 end))
 
       author_3 = "does_not_exist"
 
-      assert length(Articles.list_articles_by_author(author_3)) == 0
+      assert Articles.list_articles_by_author(author_3) == {:error, :not_found}
     end
   end
 

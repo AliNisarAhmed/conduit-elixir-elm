@@ -69,6 +69,19 @@ defmodule ConduitElixirWeb.ArticleControllerTest do
                  )
                )
     end
+
+    test "list all articles favorited by a user", %{
+      conn: conn,
+      articles: articles,
+      current_user_1: current_user_1,
+      current_user_2: current_user_2
+    } do
+      conn = get(conn, Routes.article_path(conn, :index), %{favorited: current_user_1.username})
+      article_resp = json_response(conn, 200)["articles"]
+
+      assert article_resp != []
+      assert length(article_resp) == 1
+    end
   end
 
   describe "create article" do

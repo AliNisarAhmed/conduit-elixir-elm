@@ -32,15 +32,15 @@ defmodule ConduitElixir.Articles do
       nil ->
         {:error, :not_found}
 
-      author ->
+      _ ->
         query =
           from a in Article,
             join: u in User,
             on: a.user_id == u.id,
-            where: u.username == ^author.username,
+            where: u.username == ^author_user_name,
             preload: [:tags, :article_favorites]
 
-        Repo.all(query)
+        {:ok, Repo.all(query)}
     end
   end
 
