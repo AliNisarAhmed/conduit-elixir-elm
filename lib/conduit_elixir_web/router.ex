@@ -31,6 +31,7 @@ defmodule ConduitElixirWeb.Router do
 
     scope "/user" do 
       get "/", AuthController, :get_current_user
+      put "/", AuthController, :update_user
     end
 
     scope "/users" do 

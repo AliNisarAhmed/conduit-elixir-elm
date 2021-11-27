@@ -46,6 +46,15 @@ defmodule ConduitElixir.Auth.User do
     |> validate_password(opts)
   end
 
+  def update_changeset(user, updates) do
+    user
+    |> change()
+    |> put_change(:email, Map.get(updates, "email"))
+    |> put_change(:bio, Map.get(updates, "bio"))
+    |> put_change(:image, Map.get(updates, "image"))
+    |> validate_email()
+  end
+
   def assoc_changeset(user, attrs) do
     user
     |> cast(attrs, [])
