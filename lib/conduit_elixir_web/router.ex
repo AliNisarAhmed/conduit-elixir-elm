@@ -29,6 +29,10 @@ defmodule ConduitElixirWeb.Router do
       post "/", CommentController, :create
     end
 
+    scope "/user" do 
+      get "/", AuthController, :get_current_user
+    end
+
     scope "/users" do 
       post "/", AuthController, :register
       post "/login", AuthController, :login

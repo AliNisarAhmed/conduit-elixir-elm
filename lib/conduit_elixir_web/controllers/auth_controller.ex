@@ -6,6 +6,7 @@ defmodule ConduitElixirWeb.AuthController do
   import ConduitElixirWeb.Plugs.Auth
 
   plug :require_guest_user when action in [:register, :login]
+  plug :require_authenticated_user when action in [:get_current_user]
 
   def register(conn, %{"user" => user_params}) do
     with {:ok, user} <- Auth.register_user(user_params, hash_password: true) do
@@ -24,5 +25,10 @@ defmodule ConduitElixirWeb.AuthController do
     else
       {:error, :bad_request, "Invalid credentials"}
     end
+  end
+
+  def get_current_user(%Plug.Conn{assigns: assigns} = conn, _params) do 
+    conn 
+    |> render("current_user.json", user: assigns.current_user)
   end
 end

@@ -13,6 +13,12 @@ defmodule ConduitElixirWeb.AuthView do
     }
   end
 
+  def render("current_user.json", %{user: user}) do
+    %{
+      user: render_one(user, AuthView, "user.json", as: :user)
+    }
+  end
+
   def render("user.json", %{user: user}) do
     %{
       id: user.id,
