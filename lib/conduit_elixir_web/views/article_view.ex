@@ -4,10 +4,16 @@ defmodule ConduitElixirWeb.ArticleView do
   alias ConduitElixirWeb.ArticleView
   alias ConduitElixirWeb.TagView
 
-  def render("index.json", %{articles: articles, current_user: current_user}) do
+  def render("index.json", %{paged_articles: paged_articles, current_user: current_user}) do
     %{
-      articles: render_many(articles, ArticleView, "article.json", %{current_user: current_user}),
-      articlesCount: length(articles)
+      articles:
+        render_many(paged_articles.entries, ArticleView, "article.json", %{
+          current_user: current_user
+        }),
+      articlesCount: paged_articles.total_entries,
+      page_number: paged_articles.page_number,
+      page_size: paged_articles.page_size,
+      total_pages: paged_articles.total_pages
     }
   end
 
@@ -37,6 +43,7 @@ defmodule ConduitElixirWeb.ArticleView do
   defp favorited?(_, nil), do: false
   defp favorited?([], _), do: false
   defp favorited?(_, {:error, _}), do: false
+
   defp favorited?(list, current_user) do
     list
     |> Enum.any?(fn item -> item.user_id == current_user.id end)

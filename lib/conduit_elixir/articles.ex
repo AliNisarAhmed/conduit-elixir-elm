@@ -20,11 +20,12 @@ defmodule ConduitElixir.Articles do
       [%Article{}, ...]
 
   """
-  def list_articles do
-    Repo.all(
+  def list_articles(page_params) do
+    query =
       from a in Article,
         preload: [:tags, :article_favorites]
-    )
+
+    Repo.paginate(query, page_params)
   end
 
   def list_articles_by_author(author_user_name) do

@@ -1,6 +1,11 @@
 defmodule ConduitElixirWeb.ArticleController do
   use ConduitElixirWeb, :controller
 
+  @default_page_params %{
+    page: 1,
+    page_size: 10
+  }
+
   alias ConduitElixir.Articles
   alias ConduitElixir.Articles.Article
 
@@ -28,9 +33,19 @@ defmodule ConduitElixirWeb.ArticleController do
     end
   end
 
-  def index(%Plug.Conn{assigns: assigns} = conn, _params) do
-    articles = Articles.list_articles()
-    render(conn, "index.json", articles: articles, current_user: assigns.current_user)
+  def index(
+        %Plug.Conn{assigns: assigns} = conn,
+        %{
+          "page_size" => _page_size,
+          "page" => _page
+        } = params
+      ) do
+    paged_articles = Articles.list_articles(params)
+    render(conn, "index.json", paged_articles: paged_articles, current_user: assigns.current_user)
+  end
+
+  def index(%Plug.Conn{} = conn, %{}) do
+    index(conn, @default_page_params)
   end
 
   def create(%Plug.Conn{assigns: assigns} = conn, %{"article" => article_params}) do
