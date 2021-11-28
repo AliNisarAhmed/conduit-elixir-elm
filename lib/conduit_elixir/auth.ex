@@ -33,8 +33,8 @@ defmodule ConduitElixir.Auth do
 
   def get_user_by_token(token) do
     case Phoenix.Token.verify(ConduitElixirWeb.Endpoint, "user auth", token, max_age: 86400) do
-      {:ok, user_id} -> get_user_by_id(user_id)
-      {:error, _} -> nil
+      {:ok, user_id} -> {:ok, get_user_by_id(user_id)}
+      e -> e
     end
   end
 
