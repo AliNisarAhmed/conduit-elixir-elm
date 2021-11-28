@@ -17,15 +17,17 @@ defmodule ConduitElixirWeb.ArticleControllerTest do
   }
   @invalid_attrs %{body: nil, description: nil, title: nil}
 
-  describe "List all articles" do
+  describe "List all articles - With Authentication" do
     setup [:setup_fixture, :login_user_1]
 
-    test "lists all articles", %{conn: conn, articles: articles} do
+    test "GET all articles", %{conn: conn, articles: articles} do
       conn = get(conn, Routes.article_path(conn, :index))
-      assert json_response(conn, 200)["articles"] |> length() |> Kernel.==(length(articles))
+      articles = json_response(conn, 200)["articles"]
+      assert articles |> length() |> Kernel.==(length(articles))
+      assert Enum.any?(articles, fn article -> article["favorited"] end)
     end
 
-    test "lists all articles for an author", %{conn: conn, current_user_2: current_user_2} do
+    test "GET all articles for an author", %{conn: conn, current_user_2: current_user_2} do
       conn = get(conn, Routes.article_path(conn, :index), %{author: current_user_2.username})
       article_resp = json_response(conn, 200)["articles"]
       assert article_resp != []
@@ -35,9 +37,10 @@ defmodule ConduitElixirWeb.ArticleControllerTest do
                "some-title-3",
                "some-title-4"
              ]
+      assert Enum.any?(article_resp, fn article -> article["favorited"] end)
     end
 
-    test "list all articles for a tag", %{conn: conn, articles: articles} do
+    test "GET all articles for a tag", %{conn: conn, articles: articles} do
       conn = get(conn, Routes.article_path(conn, :index), %{tag: "all"})
       article_resp = json_response(conn, 200)["articles"]
 
@@ -48,6 +51,7 @@ defmodule ConduitElixirWeb.ArticleControllerTest do
              end)
 
       assert length(article_resp) == length(articles)
+      assert Enum.any?(article_resp, fn article -> article["favorited"] end)
 
       # Fetch again for a different tag
       conn = get(conn, Routes.article_path(conn, :index), %{tag: "tagUser1"})
@@ -81,6 +85,68 @@ defmodule ConduitElixirWeb.ArticleControllerTest do
 
       assert article_resp != []
       assert length(article_resp) == 1
+    end
+  end
+
+  describe "list all articles - without Authentication" do
+    setup [:setup_fixture]
+
+    test "GET all articles", %{conn: conn, articles: articles} do
+      conn = get(conn, Routes.article_path(conn, :index))
+      articles = json_response(conn, 200)["articles"]
+      assert articles |> length() |> Kernel.==(length(articles))
+      assert Enum.all?(articles, fn article -> article["favorited"] == false end)
+    end
+
+    test "GET all articles for an author", %{conn: conn, current_user_2: current_user_2} do
+      conn = get(conn, Routes.article_path(conn, :index), %{author: current_user_2.username})
+      article_resp = json_response(conn, 200)["articles"]
+      assert article_resp != []
+      assert Enum.all?(article_resp, fn article -> article["author"] == current_user_2.id end)
+
+      assert Enum.map(article_resp, fn article -> article["slug"] end) == [
+               "some-title-3",
+               "some-title-4"
+             ]
+
+      assert Enum.all?(article_resp, fn article -> article["favorited"] == false end)
+    end
+
+    test "GET all articles for a tag", %{conn: conn, articles: articles} do
+      conn = get(conn, Routes.article_path(conn, :index), %{tag: "all"})
+      article_resp = json_response(conn, 200)["articles"]
+
+      assert article_resp != []
+
+      assert Enum.all?(article_resp, fn article ->
+               article["tagList"] |> Enum.member?("all")
+             end)
+
+      assert length(article_resp) == length(articles)
+
+      assert assert Enum.all?(article_resp, fn article -> article["favorited"] == false end)
+
+      # Fetch again for a different tag
+      conn = get(conn, Routes.article_path(conn, :index), %{tag: "tagUser1"})
+      article_resp = json_response(conn, 200)["articles"]
+
+      assert article_resp != []
+
+      assert Enum.all?(article_resp, fn article ->
+               article["tagList"] |> Enum.member?("tagUser1")
+             end)
+
+      assert length(article_resp) ==
+               length(
+                 Enum.filter(
+                   articles,
+                   &(Map.get(&1, :tags, [])
+                     |> Enum.map(fn tag -> tag.title end)
+                     |> Enum.member?("tagUser1"))
+                 )
+               )
+
+      assert Enum.all?(article_resp, fn article -> article["favorited"] == false end)
     end
   end
 
