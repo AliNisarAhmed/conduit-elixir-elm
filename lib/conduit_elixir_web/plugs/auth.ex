@@ -4,12 +4,15 @@ defmodule ConduitElixirWeb.Plugs.Auth do
   alias ConduitElixir.Auth
 
   def fetch_current_user(conn, _opts) do
-    with token <- fetch_token(get_req_header(conn, "authorization")),
-         {:ok, user} <- token && Auth.get_user_by_token(token) do
-      assign(conn, :current_user, user)
-    else
-      nil -> assign(conn, :current_user, nil)
-      e -> assign(conn, :current_user, e)
+    case fetch_token(get_req_header(conn, "authorization")) do
+      nil ->
+        assign(conn, :current_user, nil)
+
+      token ->
+        case Auth.get_user_by_token(token) do
+          {:ok, user} -> assign(conn, :current_user, user)
+          e -> assign(conn, :current_user, e)
+        end
     end
   end
 

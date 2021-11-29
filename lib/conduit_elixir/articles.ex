@@ -28,7 +28,7 @@ defmodule ConduitElixir.Articles do
     Repo.paginate(query, page_params)
   end
 
-  def list_articles_by_author(author_user_name) do
+  def list_articles_by_author(author_user_name, page_params) do
     case Auth.get_user_by_username(author_user_name) do
       nil ->
         {:error, :not_found}
@@ -41,11 +41,11 @@ defmodule ConduitElixir.Articles do
             where: u.username == ^author_user_name,
             preload: [:tags, :article_favorites]
 
-        {:ok, Repo.all(query)}
+        {:ok, Repo.paginate(query, page_params)}
     end
   end
 
-  def list_articles_by_tag(tag) do
+  def list_articles_by_tag(tag, page_params) do
     query =
       from a in Article,
         join: t in assoc(a, :tags),
@@ -53,10 +53,10 @@ defmodule ConduitElixir.Articles do
         order_by: [desc: a.inserted_at],
         preload: [:article_favorites, :tags]
 
-    Repo.all(query)
+    Repo.paginate(query, page_params)
   end
 
-  def list_articles_favorited_by_username(username) do
+  def list_articles_favorited_by_username(username, page_params) do
     case Auth.get_user_by_username(username) do
       nil ->
         {:error, :not_found}
@@ -70,7 +70,7 @@ defmodule ConduitElixir.Articles do
             order_by: [desc: a.inserted_at],
             preload: [:article_favorites, :tags]
 
-        {:ok, Repo.all(query)}
+        {:ok, Repo.paginate(query, page_params)}
     end
   end
 

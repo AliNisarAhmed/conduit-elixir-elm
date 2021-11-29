@@ -1,10 +1,7 @@
 defmodule ConduitElixirWeb.ArticleController do
   use ConduitElixirWeb, :controller
 
-  @default_page_params %{
-    page: 1,
-    page_size: 10
-  }
+  alias ConduitElixir.Pagination
 
   alias ConduitElixir.Articles
   alias ConduitElixir.Articles.Article
@@ -16,36 +13,42 @@ defmodule ConduitElixirWeb.ArticleController do
   plug :require_authenticated_user when action in [:create, :update, :delete, :favorite]
   plug :optional_authentication when action in [:index]
 
-  def index(%Plug.Conn{assigns: assigns} = conn, %{"author" => author}) do
-    with {:ok, articles} <- Articles.list_articles_by_author(author) do
-      render(conn, "index.json", articles: articles, current_user: assigns.current_user)
+  def index(%Plug.Conn{assigns: assigns} = conn, %{"author" => author} = params) do
+    page_params = Pagination.get_page_params(params)
+
+    with {:ok, paged_articles} <- Articles.list_articles_by_author(author, page_params) do
+      render(conn, "index.json",
+        paged_articles: paged_articles,
+        current_user: assigns.current_user
+      )
     end
   end
 
-  def index(%Plug.Conn{assigns: assigns} = conn, %{"tag" => tag}) do
-    articles = Articles.list_articles_by_tag(tag)
-    render(conn, "index.json", articles: articles, current_user: assigns.current_user)
+  def index(%Plug.Conn{assigns: assigns} = conn, %{"tag" => tag} = params) do
+    page_params = Pagination.get_page_params(params)
+    paged_articles = Articles.list_articles_by_tag(tag, page_params)
+    render(conn, "index.json", paged_articles: paged_articles, current_user: assigns.current_user)
   end
 
-  def index(%Plug.Conn{assigns: assigns} = conn, %{"favorited" => username}) do
-    with {:ok, articles} <- Articles.list_articles_favorited_by_username(username) do
-      render(conn, "index.json", articles: articles, current_user: assigns.current_user)
+  def index(%Plug.Conn{assigns: assigns} = conn, %{"favorited" => username} = params) do
+    page_params = Pagination.get_page_params(params)
+
+    with {:ok, paged_articles} <-
+           Articles.list_articles_favorited_by_username(username, page_params) do
+      render(conn, "index.json",
+        paged_articles: paged_articles,
+        current_user: assigns.current_user
+      )
     end
   end
 
   def index(
         %Plug.Conn{assigns: assigns} = conn,
-        %{
-          "page_size" => _page_size,
-          "page" => _page
-        } = params
+        params
       ) do
-    paged_articles = Articles.list_articles(params)
+    page_params = Pagination.get_page_params(params)
+    paged_articles = Articles.list_articles(page_params)
     render(conn, "index.json", paged_articles: paged_articles, current_user: assigns.current_user)
-  end
-
-  def index(%Plug.Conn{} = conn, %{}) do
-    index(conn, @default_page_params)
   end
 
   def create(%Plug.Conn{assigns: assigns} = conn, %{"article" => article_params}) do
