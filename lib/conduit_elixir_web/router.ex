@@ -13,6 +13,7 @@ defmodule ConduitElixirWeb.Router do
 
     scope "/articles" do 
       get "/", ArticleController, :index 
+      get "/feed", ArticleController, :feed
       post "/", ArticleController, :create 
     end
 

@@ -10,7 +10,7 @@ defmodule ConduitElixirWeb.ArticleController do
 
   action_fallback ConduitElixirWeb.FallbackController
 
-  plug :require_authenticated_user when action in [:create, :update, :delete, :favorite]
+  plug :require_authenticated_user when action in [:feed, :create, :update, :delete, :favorite]
   plug :optional_authentication when action in [:index]
 
   def index(%Plug.Conn{assigns: assigns} = conn, %{"author" => author} = params) do
@@ -49,6 +49,19 @@ defmodule ConduitElixirWeb.ArticleController do
     page_params = Pagination.get_page_params(params)
     paged_articles = Articles.list_articles(page_params)
     render(conn, "index.json", paged_articles: paged_articles, current_user: assigns.current_user)
+  end
+
+  def feed(%Plug.Conn{assigns: assigns} = conn, params) do
+    page_params = Pagination.get_page_params(params)
+
+    with {:ok, paged_articles} <-
+           Articles.list_articles_followed_by_user(
+             assigns.current_user.id,
+             page_params
+           ) do
+      conn
+      |> render("index.json", paged_articles: paged_articles, current_user: assigns.current_user)
+    end
   end
 
   def create(%Plug.Conn{assigns: assigns} = conn, %{"article" => article_params}) do

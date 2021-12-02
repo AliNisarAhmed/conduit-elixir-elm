@@ -10,6 +10,7 @@ defmodule ConduitElixir.Articles do
   alias ConduitElixir.Favorites.ArticleFavorite
   alias ConduitElixir.Auth
   alias ConduitElixir.Auth.User
+  alias ConduitElixir.Profiles.UserFollows
 
   @doc """
   Returns the list of articles.
@@ -72,6 +73,19 @@ defmodule ConduitElixir.Articles do
 
         {:ok, Repo.paginate(query, page_params)}
     end
+  end
+
+  def list_articles_followed_by_user(user_id, page_params) do 
+    query = 
+      from a in Article,
+      join: u in assoc(a, :user),
+      join: uf in UserFollows,
+      on: uf.followed_user_id == u.id,
+      where: u.id == uf.followed_user_id,
+      where: uf.follower_id == ^user_id,
+      preload: [:article_favorites, :tags]
+
+    {:ok, Repo.paginate(query, page_params)}
   end
 
   @doc """

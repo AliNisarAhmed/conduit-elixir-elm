@@ -39,10 +39,19 @@ user2_attrs = %{
   password: "abcd1234"
 }
 
+user3_attrs = %{
+  email: "follower1@test.com",
+  username: "follower1",
+  password: "abcd1234"
+}
+
 {:ok, user1} = ConduitElixir.Auth.register_user(user1_attrs)
 {:ok, user2} = ConduitElixir.Auth.register_user(user2_attrs)
+{:ok, follower1} = ConduitElixir.Auth.register_user(user3_attrs)
 
 ConduitElixir.Profiles.follow_user(user1.username, user2)
+ConduitElixir.Profiles.follow_user(user1.username, follower1)
+ConduitElixir.Profiles.follow_user(user2.username, follower1)
 
 article1_attr = %{
   "tagList" => ["tag1", "tag2"],
@@ -92,8 +101,8 @@ article6_attr = %{
 {:ok, article4} = ConduitElixir.Articles.create_article(article4_attr, user2)
 
 # -- Articles with no favorites and no comments
-{:ok, article5} = ConduitElixir.Articles.create_article(article5_attr, user1)
-{:ok, article6} = ConduitElixir.Articles.create_article(article6_attr, user2)
+{:ok, article5} = ConduitElixir.Articles.create_article(article5_attr, follower)
+{:ok, article6} = ConduitElixir.Articles.create_article(article6_attr, follower)
 
 ConduitElixir.Articles.favorite_article(user2.id, article1.slug)
 ConduitElixir.Articles.favorite_article(user2.id, article2.slug)
