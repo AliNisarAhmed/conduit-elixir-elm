@@ -37,6 +37,7 @@ defmodule ConduitElixirWeb.ArticleControllerTest do
                "some-title-3",
                "some-title-4"
              ]
+
       assert Enum.any?(article_resp, fn article -> article["favorited"] end)
     end
 
@@ -85,6 +86,37 @@ defmodule ConduitElixirWeb.ArticleControllerTest do
 
       assert article_resp != []
       assert length(article_resp) == 1
+    end
+
+    test "list Feed for the logged in user", %{
+      conn: conn,
+      articles: articles,
+      current_user_1: current_user_1,
+      current_user_2: current_user_2
+    } do
+      conn = post(conn, Routes.profile_path(conn, :follow_user, current_user_2.username))
+      conn = get(conn, Routes.article_path(conn, :feed))
+      article_resp = json_response(conn, 200)["articles"]
+
+      assert article_resp != []
+      assert Enum.all?(article_resp, fn article -> article["author"] == current_user_2.id end)
+
+      assert Enum.map(article_resp, fn article -> article["slug"] end) == [
+               "some-title-3",
+               "some-title-4"
+             ]
+    end
+
+    test "Feed should be empty if the author has not published anything", %{
+      conn: conn,
+      current_user_1: current_user_1,
+      current_user_3: current_user_3
+    } do
+      conn = post(conn, Routes.profile_path(conn, :follow_user, current_user_3.username))
+      conn = get(conn, Routes.article_path(conn, :feed))
+      article_resp = json_response(conn, 200)["articles"]
+
+      assert article_resp == []
     end
   end
 
@@ -149,6 +181,8 @@ defmodule ConduitElixirWeb.ArticleControllerTest do
       assert Enum.all?(article_resp, fn article -> article["favorited"] == false end)
     end
   end
+
+  # ----------------------------------------------------------------------------
 
   describe "create article" do
     setup [:setup_fixture, :login_user_1]
@@ -246,6 +280,7 @@ defmodule ConduitElixirWeb.ArticleControllerTest do
     %{
       current_user_1: current_user_1,
       current_user_2: current_user_2,
+      current_user_3: current_user_3,
       articles: articles
     } = article_fixture()
 
@@ -255,7 +290,8 @@ defmodule ConduitElixirWeb.ArticleControllerTest do
      conn: conn,
      articles: articles,
      current_user_1: current_user_1,
-     current_user_2: current_user_2}
+     current_user_2: current_user_2,
+     current_user_3: current_user_3}
   end
 
   defp login_user(conn, user) do

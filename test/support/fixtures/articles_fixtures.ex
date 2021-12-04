@@ -1,11 +1,12 @@
 defmodule ConduitElixir.ArticleFixtures do
-  defstruct [:current_user_1, :current_user_2, articles: []]
+  defstruct [:current_user_1, :current_user_2, :current_user_3, articles: []]
 
   alias ConduitElixir.Auth
   alias ConduitElixir.Articles.Article
   alias ConduitElixir.Articles
 
   alias ConduitElixir.Repo
+  alias ConduitElixir.Profiles
 
   import Ecto.Query, warn: false
 
@@ -29,6 +30,13 @@ defmodule ConduitElixir.ArticleFixtures do
       Auth.register_user(%{
         email: "test-2@test.com",
         username: "test_user_2",
+        password: "abcd1234"
+      })
+
+    {:ok, current_user_3} = 
+      Auth.register_user(%{
+        email: "test-3@test.com",
+        username: "test_user_3",
         password: "abcd1234"
       })
 
@@ -85,6 +93,7 @@ defmodule ConduitElixir.ArticleFixtures do
     %ConduitElixir.ArticleFixtures{
       current_user_1: current_user_1,
       current_user_2: current_user_2,
+      current_user_3: current_user_3,
       articles: articles
     }
   end
